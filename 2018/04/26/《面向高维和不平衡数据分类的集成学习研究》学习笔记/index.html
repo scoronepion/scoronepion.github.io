@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="0x00 背景最近报名参加了ATEC蚂蚁开发者大赛，选择的赛题是：风险大脑，支付风险识别。我是初学菜鸟，有什么不严谨或者错误的地方，还请多多包涵，不吝赐教。这次比赛的赛题数据给的是csv文件，包含主键（ID）、预测标签（label）、发生日期（data）和297个数值特征。因为数据维数过高，涉及到高维数据的分类，所以我在知网上找到了这篇论文，分享一下学习过程。 0x01 论文引言数据的高维和不平衡">
+<meta name="keywords" content="高维数据,论文学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《面向高维和不平衡数据分类的集成学习研究》学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/04/26/《面向高维和不平衡数据分类的集成学习研究》学习笔记/index.html">
+<meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="0x00 背景最近报名参加了ATEC蚂蚁开发者大赛，选择的赛题是：风险大脑，支付风险识别。我是初学菜鸟，有什么不严谨或者错误的地方，还请多多包涵，不吝赐教。这次比赛的赛题数据给的是csv文件，包含主键（ID）、预测标签（label）、发生日期（data）和297个数值特征。因为数据维数过高，涉及到高维数据的分类，所以我在知网上找到了这篇论文，分享一下学习过程。 0x01 论文引言数据的高维和不平衡">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://static.zybuluo.com/TiroZ/3ccez1be0mkp302kxsgg5ogz/Hughes%E9%97%AE%E9%A2%98.PNG">
+<meta property="og:updated_time" content="2018-04-26T07:27:11.352Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《面向高维和不平衡数据分类的集成学习研究》学习笔记">
+<meta name="twitter:description" content="0x00 背景最近报名参加了ATEC蚂蚁开发者大赛，选择的赛题是：风险大脑，支付风险识别。我是初学菜鸟，有什么不严谨或者错误的地方，还请多多包涵，不吝赐教。这次比赛的赛题数据给的是csv文件，包含主键（ID）、预测标签（label）、发生日期（data）和297个数值特征。因为数据维数过高，涉及到高维数据的分类，所以我在知网上找到了这篇论文，分享一下学习过程。 0x01 论文引言数据的高维和不平衡">
+<meta name="twitter:image" content="http://static.zybuluo.com/TiroZ/3ccez1be0mkp302kxsgg5ogz/Hughes%E9%97%AE%E9%A2%98.PNG">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/26/《面向高维和不平衡数据分类的集成学习研究》学习笔记/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>《面向高维和不平衡数据分类的集成学习研究》学习笔记 | SCORONEPION</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SCORONEPION</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰若雪峰与天骄，冷玉温润眉眼笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+    <a href="/schedule/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />日程表</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/26/《面向高维和不平衡数据分类的集成学习研究》学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">《面向高维和不平衡数据分类的集成学习研究》学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-04-26 11:16:14 / 修改时间：15:27:11" itemprop="dateCreated datePublished" datetime="2018-04-26T11:16:14+08:00">2018-04-26</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-背景"><a href="#0x00-背景" class="headerlink" title="0x00 背景"></a>0x00 背景</h2><p>最近报名参加了ATEC蚂蚁开发者大赛，选择的赛题是：<a href="https://dc.cloud.alipay.com/index#/topic/intro?id=4" target="_blank" rel="noopener">风险大脑，支付风险识别</a>。我是初学菜鸟，有什么不严谨或者错误的地方，还请多多包涵，不吝赐教。这次比赛的赛题数据给的是csv文件，包含主键（ID）、预测标签（label）、发生日期（data）和297个数值特征。因为数据维数过高，涉及到高维数据的分类，所以我在知网上找到了这篇论文，分享一下学习过程。</p>
+<h2 id="0x01-论文引言"><a href="#0x01-论文引言" class="headerlink" title="0x01 论文引言"></a>0x01 论文引言</h2><h3 id="数据的高维和不平衡性"><a href="#数据的高维和不平衡性" class="headerlink" title="数据的高维和不平衡性"></a>数据的高维和不平衡性</h3><p>高维性指的是数据的维度过高（例如图像，假如每个像素点作为一个特征维，则明显存在高维特性），不平衡性指的是标记的样本（黑样本）相对于整个数据集而言是少数的，导致相关类和不相关类数量上的不平衡。<br>存在的问题：</p>
+<ol>
+<li>分类高维数据时，由于特征空间大，产生的分类器复杂，数据容易过拟合</li>
+<li>分类不平衡数据时，基于假设类别平衡的分类算法容易忽略本应被关注的少数类别</li>
+</ol>
+<h3 id="高维数据为何难以分类"><a href="#高维数据为何难以分类" class="headerlink" title="高维数据为何难以分类"></a>高维数据为何难以分类</h3><p>随着维数不断增加，高维超立方体中的数据向各个角落扩散，使得超立方体中心越来越空；而高位球体、椭球体中的数据向各个角落扩散。根据此结论，高维数据分类难问题如下：</p>
+<ol>
+<li>密度估计难问题：高维空间大部分是空的，多变量数据往往存在一个低维子空间中。虽然可以将高维空间投影到一个低维子空间中，但正确子空间难以找到。</li>
+<li>维数灾难问题：特征增加，所需样本数量也相应增加</li>
+<li><p>Hughes问题：对有限训练样本而言，存在一个最优数据复杂度，可使分类精度达到最优。若数据特征数过多，量化精度过高，都会导致分类精度下降，这就是著名的Hughes现象。也就是说，数据的特征数越多，并不意味着数据提供的信息越丰富，也不意味着在此数据上的分类准确率将随之提高。</p>
+<p><img src="http://static.zybuluo.com/TiroZ/3ccez1be0mkp302kxsgg5ogz/Hughes%E9%97%AE%E9%A2%98.PNG" alt="Hughes问题.PNG-28.1kB"></p>
+</li>
+</ol>
+<h3 id="不平衡数据为何难以分类"><a href="#不平衡数据为何难以分类" class="headerlink" title="不平衡数据为何难以分类"></a>不平衡数据为何难以分类</h3><ol>
+<li>不恰当的评估标准：传统分类算法通常假设类别平衡，采用分类准确率作为评价标准。当类别不平衡的时候，为达到精度最大化，分类器往往会牺牲少数类的性能，只要在大类上获得较高的准确率，则分类器的平均准确率将不受少数类的影响。但是在某些特定领域（如风控领域），小类则是需要特别关注的。</li>
+<li>数据稀缺</li>
+<li>数据碎片：采用分治法的分类算法（比如决策树算法），将原始问题划分为若干个子问题来处理，这样导致将原始数据空间划分为多个子空间，导致只能从多个子空间中寻找数据规律。对于少数类而言，划分后数据信息很少，无法挖掘出规律，形成数据碎片。</li>
+<li>不恰当的数据偏差</li>
+<li>噪声：有些算法将少数类划分为噪声，过滤后导致少数类的数量更加稀少；有些算法将噪声认定为少数类，从而导致真正的少数类无法得到有效训练。</li>
+</ol>
+<h3 id="现有分类方法"><a href="#现有分类方法" class="headerlink" title="现有分类方法"></a>现有分类方法</h3><p>高维数据分类有两种方法：降维和设计新算法。常用降维方法有两类：</p>
+<ul>
+<li>特征变换：线性变换（主成分分析、局部线性投影、…）和非线性变换（多维尺度方法…）</li>
+<li>特征选择：从原始特征空间中选择一部分重要属性、组成新的特征空间。</li>
+</ul>
+<p>针对高维数据分类的算法——支持向量机（SVM）存在两个问题：1. 计算量大、速度慢；2. 面对高维数据，解释性差。</p>
+<h3 id="集成学习"><a href="#集成学习" class="headerlink" title="集成学习"></a>集成学习</h3><p>集成学习将一组基分类器的分类结果按照某种方式集成，用于分类新实例，利用多个基分类器间分类错误差异来提高算法的泛化能力。<br>解决高维数据问题时，若在全局特征空间中构造单分类器，较难找到最优分类器。采用降维的方式可以减少高维特征空间的计算量，使分类关注于有价值的信息，但降维的好坏将直接影响分类算法的性能。同时，直接删除不需要的特征，可能丢失一些未发现且有用的信息。<br>集成学习可以在特征子空间中构造分类器的集成，既形成多个特征子空间下的分类器模型，一方面，在单个分类器建立时，可以降低高维特征的不良影响，另一方面，多个子空间结果的集成也避免了降维引起的信息损失问题。</p>
+<hr>
+<p>未完待续</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/高维数据/" rel="tag"># 高维数据</a>
+          
+            <a href="/tags/论文学习/" rel="tag"># 论文学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/22/考研分享/" rel="next" title="上大学硕考研经验分享">
+                <i class="fa fa-chevron-left"></i> 上大学硕考研经验分享
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Tiro</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-背景"><span class="nav-number">1.</span> <span class="nav-text">0x00 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-论文引言"><span class="nav-number">2.</span> <span class="nav-text">0x01 论文引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据的高维和不平衡性"><span class="nav-number">2.1.</span> <span class="nav-text">数据的高维和不平衡性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高维数据为何难以分类"><span class="nav-number">2.2.</span> <span class="nav-text">高维数据为何难以分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不平衡数据为何难以分类"><span class="nav-number">2.3.</span> <span class="nav-text">不平衡数据为何难以分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#现有分类方法"><span class="nav-number">2.4.</span> <span class="nav-text">现有分类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集成学习"><span class="nav-number">2.5.</span> <span class="nav-text">集成学习</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tiro</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
