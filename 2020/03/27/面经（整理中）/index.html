@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="感谢室友shy提供大纲 元思想 将问题拆分成不同结构的子问题或是不同角度的问题 要将一个问题结构化理解，然后条理清晰地回答  数据结构 查找 对数组、HashMap、链表、树的查找方式及效率（见对应数据结构） 二分查找（递归与迭代的手写） 源生查找算法   十种排序算法 （最坏、平均、最优）时间复杂度、空间复杂度 稳定性、In-place/Out-place 是否支持并行 实现 是否有递归/非递归">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面经（整理中）">
+<meta property="og:url" content="http://yoursite.com/2020/03/27/面经（整理中）/index.html">
+<meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="感谢室友shy提供大纲 元思想 将问题拆分成不同结构的子问题或是不同角度的问题 要将一个问题结构化理解，然后条理清晰地回答  数据结构 查找 对数组、HashMap、链表、树的查找方式及效率（见对应数据结构） 二分查找（递归与迭代的手写） 源生查找算法   十种排序算法 （最坏、平均、最优）时间复杂度、空间复杂度 稳定性、In-place/Out-place 是否支持并行 实现 是否有递归/非递归">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-27T07:21:46.501Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面经（整理中）">
+<meta name="twitter:description" content="感谢室友shy提供大纲 元思想 将问题拆分成不同结构的子问题或是不同角度的问题 要将一个问题结构化理解，然后条理清晰地回答  数据结构 查找 对数组、HashMap、链表、树的查找方式及效率（见对应数据结构） 二分查找（递归与迭代的手写） 源生查找算法   十种排序算法 （最坏、平均、最优）时间复杂度、空间复杂度 稳定性、In-place/Out-place 是否支持并行 实现 是否有递归/非递归">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/03/27/面经（整理中）/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>面经（整理中） | SCORONEPION</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SCORONEPION</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰若雪峰与天骄，冷玉温润眉眼笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+    <a href="/schedule/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />日程表</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/27/面经（整理中）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">面经（整理中）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-27 13:15:43 / 修改时间：15:21:46" itemprop="dateCreated datePublished" datetime="2020-03-27T13:15:43+08:00">2020-03-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>感谢室友shy提供大纲</p>
+<h2 id="元思想"><a href="#元思想" class="headerlink" title="元思想"></a>元思想</h2><ol>
+<li>将问题拆分成不同结构的子问题或是不同角度的问题</li>
+<li>要将一个问题结构化理解，然后条理清晰地回答</li>
+</ol>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><ol>
+<li>查找<ol>
+<li>对数组、HashMap、链表、树的查找方式及效率（见对应数据结构）</li>
+<li>二分查找（递归与迭代的手写）</li>
+<li>源生查找算法</li>
+</ol>
+</li>
+<li>十种排序算法<ol>
+<li>（最坏、平均、最优）时间复杂度、空间复杂度</li>
+<li>稳定性、In-place/Out-place</li>
+<li>是否支持并行</li>
+<li>实现<ol>
+<li>是否有递归/非递归版本</li>
+<li>手写所有版本的JAVA代码</li>
+</ol>
+</li>
+<li>源生实现<ol>
+<li>对常见数据结构int[]，ArrayList，LinkedList等，如何排序？</li>
+<li>源生的Sort方法，以及内部实现</li>
+<li>HashMap、HashTable，HashCode()，Hash()等的底层实现</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>核心数据结构：数组、链表、哈希表、树（、容器）<ol>
+<li>表达力：这四种数据结构都可以作为某个类的底层</li>
+<li>查找、插入、删除、排序的开销</li>
+<li>源生实现（尤其是容器）</li>
+</ol>
+</li>
+<li>树的特性与应用<ol>
+<li>二叉树、排序二叉树、满二叉树、完全二叉树、平衡二叉树、大小顶堆、B(-/+)树、红黑树、<ol>
+<li>它们的数据结构形式</li>
+<li>遍历形式（递归/非递归方式）（递归要能手写；非递归不要求，可以作为附加题）</li>
+<li>它们的应用<ol>
+<li>avl树“windows对进程地址空间的管理”</li>
+<li>红黑树（linux中ext3文件系统管理），（JAVA的HashMap的底层实现）</li>
+<li>B树（数据库）（文件系统） -》确定是哪类数据库和哪类文件系统</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>含有n个节点的二叉树，总共有(2n)!/(n!(n+1)!)种形态</li>
+<li>如何确定二叉树高度：递归法，根节点高度=max(左子树高度，右子树高度)+1</li>
+</ol>
+</li>
+<li>栈、队列、双向队列<ol>
+<li>常用类方法、类接口</li>
+</ol>
+</li>
+<li>JAVA 字典，集合，映射map, set<ol>
+<li>常用类方法及底层</li>
+</ol>
+</li>
+<li>动态规划与贪心<ol>
+<li>思想上的异同</li>
+<li>练习题</li>
+</ol>
+</li>
+</ol>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><ol>
+<li><p>TCP</p>
+<ol>
+<li><p>报文信息</p>
+</li>
+<li><p>三次握手、四次挥手</p>
+<p>答：第一次握手：建立连接时，客户端发送syn包到服务器，并进入SYN_SEND状态，等待服务器确认</p>
+<p>第二次握手：服务器收到syn包，确认客户端的syn，然后发送一个syn+ack包，进入SYN_RECV状态</p>
+<p>第三次握手：客户端收到syn+ack包，向服务器发送ack包，发送完毕后，客户端和服务器进入ESTABLISHED状态，TCP连接成功</p>
+<pre><code>ps：为什么要三次握手？
+    答：假如是两次握手的话，客户端发出一个连接请求，但是在网络中滞留了太长的时间才被送到服务端，这个请求到达服务端的时候，客户端已经因为超时放弃了连接，但是服务端以为这是一个合法连接请求，于是向客户端发送确认报文，同意建立连接。由于采用了两次握手，服务器发出确认报文后，连接就建立了，但是客户端此时并没有发出连接请求，所以会忽略服务端的确认报文，也不会传输数据。此时服务端一直等待客户端发送数据，白白浪费了资源。
+</code></pre><p>第一次挥手：客户端发送连接释放报文，停止发送数据，进入FIN-WAIT-1（终止等待1）状态</p>
+<p>第二次挥手：服务器收到连接释放报文，发出确认报文，服务器进入CLOSE-WAIT（关闭等待）状态。服务器通知高层应用进程，客户端和服务器之间的连接处于半关闭状态，客户端不会再发送数据，但依然可以接收数据。客户端收到服务器的确认请求后，客户端进入FIN-WAIT-2（终止等待2）状态，等待服务器发送连接释放报文，此时还可以接收服务器发送的最后数据</p>
+<p>第三次挥手：服务器发送完最后的数据，向客户端发送连接释放报文，服务器进入LAST-ACK（最后确认）状态，等待客户端确认</p>
+<p>第四次挥手：客户端收到连接释放报文，向服务器发出确认报文，客户端进入TIME-WAIT（时间等待）状态。经过2倍最长报文段寿命时间后，才进入CLOSE（关闭连接）状态，服务器只要收到客户端发送的确认报文，立即进入CLOSE（关闭）状态，结束此次连接，服务器结束连接的时间早于客户端。</p>
+<pre><code>ps：为什么建立连接三次，结束连接要四次？
+    答：建立连接的时候，SYN和ACK可以一起发送，ACK用来应答，SYN用来同步。关闭连接时，服务器收到客户端发送的连接释放报文时，数据可能并没有传完，所以只能先回复一个ACK确认报文，告诉客户端：“你的连接释放报文我收到了，只有等我传送完数据，我才能发送连接释放报文”，所以需要四次。
+</code></pre></li>
+<li><p>TCP滑动窗口可靠性从何而来？</p>
+<p>答：对于TCP滑动窗口来说，窗口左侧的是已经收到确认报文的数据，窗口内是已发送等待确认的数据和等待发送的数据。只有收到了确认报文，滑动</p>
+<pre><code>窗口才会右移，如果经过一段时间后仍未收到确认报文，就重新发送数据，直到发送成功为止。
+</code></pre></li>
+<li><p>理清各类状态（TIME_WAIT)</p>
+</li>
+<li><p>流量控制（滑动窗口）</p>
+<p>答：如果发送端发送数据过快，接收端来不及接收，就会导致分组丢失。为了避免发生这种情况，我们应该控制发送端的发送速度，使得接收端来得及接收，这就是流量控制。实现机制是滑动窗口协议</p>
+<ol>
+<li><p>什么情况下可能引发死锁？如何避免死锁发生？</p>
+<p>答：当发送者收到了一个窗口大小为0的应答，他认为接收者当前无法接受数据，于是停止发送，等待接收者的下一个应答。但是如果这个窗口不为0的应答在传输过程中丢失，发送者就会一直等待下去，而接收者以为发送者已经收到了这个应答，于是等待接收新的数据，双方互相等待，产生死锁。</p>
+<p>为了解决这个问题，TCP使用了持续计时器，每当发送者接收到一个零窗口应答后，启动这个计时器，时间一到就主动询问接收者窗口大小，若依然是零窗口，重置计时器继续等待，若不为0，表示应答报文丢失，此时重置发送窗口后开始发送，避免了死锁的产生。</p>
+</li>
+</ol>
+</li>
+<li><p>拥塞控制（两种拥塞、三种方案）</p>
+<ol>
+<li><p>拥塞控制与流量控制的区别</p>
+<p>答：拥塞控制作用于网络，防止过多数据进入网络，避免网络负载过大，常用方法：慢开始、拥塞避免、快重传、快恢复、流量控制作用与接收者，它是控制发送者的发送速度从而使接收者来得及接收，避免分组丢失。</p>
+</li>
+</ol>
+</li>
+<li><p>心跳检测</p>
+<p>答：参考那个项目</p>
+</li>
+<li><p>SYN Flood攻击原理</p>
+</li>
+</ol>
+</li>
+<li><p>UDP</p>
+<ol>
+<li><p>与TCP的异同</p>
+<p>答：没有握手、确认、窗口、重传这些机制，UDP是一个无状态的传输协议，传输数据非常快，但是不可靠，不稳定，存在丢包的现象</p>
+</li>
+<li><p>无连接、有界的特性</p>
+</li>
+</ol>
+</li>
+<li><p>HTTP</p>
+<ol>
+<li><p>HTTP报文结构与对应信息</p>
+<ol>
+<li><p>状态码含义、请求头解释</p>
+<p>答：请求头中描述了这次通信的资源、浏览器属性和cookie等信息</p>
+<pre><code>1XX：信息状态码 - 请求正在处理
+2XX：成功 - 请求正常处理
+3XX：重定向 - 需要附加操作
+4XX：客户端错误 - 服务端无法处理请求
+5XX：服务端错误 - 服务端处理请求时出错
+</code></pre></li>
+<li><p>各个版本区别</p>
+<p>答：HTTP 2与1和1.1的区别在于：    </p>
+<ul>
+<li><p>多路复用：1.x中，并发请求时必须使用多个TCP连接。2不需要，所有请求通过一个TCP连接完成。数据流以消息的方式发送，消息由一个或多个帧组成，帧之间可以乱序发送</p>
+</li>
+<li><p>二进制：采用二进制传输数据，而不是像1.x版本采用文本格式传输数据</p>
+</li>
+<li><p>包头压缩：2对采用首部表存储HTTP头中的键值对，对于同样的数据，不再每次请求和响应发送，新的键值对压入首部表尾部，更新键值对直接替换之前的值即可。</p>
+</li>
+<li><p>主动推送：服务器可以在发送页面HTML时主动推送其他资源（比如js和css），不用等到浏览器解析到相应位置，发起请求再响应。</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>HTTP与HTTPS</p>
+<p>答：客户端发起HTTPS请求，服务端传输自己的公钥（证书），客户端解析证书，并验证其有效性，如果有异常就会发出警告，没有异常的话，生成一个随机值，用公钥对这个随机值进行加密，发送给服务端。服务端利用私钥解密得到了客户端传递的随机值，然后把内容通过该随机值进行加密，发送给客户端。客户端用之前生成的随机值解密，获取内容。</p>
+</li>
+<li><p>HTTP过程（从访问某网址到浏览器显示）</p>
+<ol>
+<li><p>浏览器敲入一个域名，尽可能详情的说下接下来网络协议层面发生了什么</p>
+<p>答：</p>
+<ol>
+<li>DNS域名解析：将域名解析成IP地址（先从本机host里找、再向DNS服务器发送查询报文）</li>
+<li>建立TCP连接：三次握手</li>
+<li>发送HTTP请求</li>
+<li>服务器处理请求：web服务器解析用户请求，调度资源文件</li>
+<li>返回响应结果</li>
+<li>关闭TCP连接：四次挥手</li>
+<li>浏览器解析HTML，生成dom树，解析css，生成css规则树，结合起来生成渲染树</li>
+<li>浏览器布局渲染：计算CSS样式，绘制节点，将页面展示给用户</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>附加题：</li>
+</ol>
+</li>
+<li><p>SOCKET</p>
+<ol>
+<li><p>讲一下连接步骤（服务器监听、客户端请求、连接确认）</p>
+<ul>
+<li>服务器监听 - 监控网络状态，等待客户端连接</li>
+<li>客户端请求 - 客户端SOCKET描述要连接到服务端SOCKET，指出地址和端口号，向服务器SOCKET题出请求</li>
+<li>连接确认 - 服务器SOCKET监听到连接请求，建立一个新线程，把服务器SOCKET描述发送给客户端，客户端确认后，双方建立连接，而服务器SOCKET继续处于监听状态，等待其他连接。</li>
+</ul>
+</li>
+<li><p>讲一下通信流程</p>
+</li>
+</ol>
+</li>
+<li>Cookies，Session和Token<ol>
+<li>概念</li>
+<li>异同</li>
+</ol>
+</li>
+</ol>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><ol>
+<li>逻辑地址、物理地址、虚拟内存</li>
+<li>死锁<ol>
+<li>概念</li>
+<li>死锁条件（何时会发生？）</li>
+</ol>
+</li>
+<li>并发与并行<ol>
+<li>概念，异同</li>
+<li>通过多线程如何实现？</li>
+</ol>
+</li>
+<li>同步与互斥；同步与异步<ol>
+<li>概念，异同</li>
+</ol>
+</li>
+<li><p>线程与进程</p>
+<ol>
+<li><p>概念，区别<br>答：进程和线程的主要差别在于它们是不同的操作系统资源管理方式。进程有独立的地址空间，一个进程崩溃后，不会对其它进程产生影响，而线程只是一个进程中的不同执行路径。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉就等于整个进程死掉，所以多进程的程序要比多线程的程序健壮，但在进程切换时，耗费资源较大，效率要差一些。但对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程。一个程序至少有一个进程,一个进程至少有一个线程。</p>
+</li>
+<li><p>生产者消费者模型（通信模型）</p>
+<ol>
+<li>用wait和notify模拟生产者消费者模式</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>进程<ol>
+<li>常见状态</li>
+<li>进程同步</li>
+<li>进程间通信方式</li>
+<li>守护进程，僵死进程，孤儿进程，惊群效应</li>
+</ol>
+</li>
+<li>线程<ol>
+<li>线程状态，start,run,wait,notify,yiled,sleep,join等方法的作用以及区别</li>
+<li>线程同步</li>
+<li>线程安全与不安全<ol>
+<li>线程安全的类，是如何实现线程安全的？</li>
+<li>线程A和线程B同时针对一个共享变量进行操作，如何实现线程安全？</li>
+</ol>
+</li>
+<li>JAVA 线程类<ol>
+<li>wait，notify的应用场景</li>
+<li>ThreadLocal原理，如何使用？</li>
+</ol>
+</li>
+<li>Java乐观锁机制，CAS思想？缺点？是否原子性？如何保证？</li>
+<li>synchronized使用方法？底层实现？</li>
+<li>ReenTrantLock使用方法？底层实现？和synchronized区别？</li>
+<li>公平锁和非公平锁区别？为什么公平锁效率低？</li>
+<li>锁优化。自旋锁、自适应自旋锁、锁消除、锁粗化、偏向锁、轻量级锁、重量级锁解释</li>
+<li>手写简单的线程池，体现线程复用<ol>
+<li>线程池构造函数7大参数，线程处理任务过程，线程拒绝策略</li>
+</ol>
+</li>
+<li>手写消费者生产者模式</li>
+<li>手写多线程交替打印ABC</li>
+</ol>
+</li>
+<li>调度算法</li>
+<li>页面置换算法</li>
+<li>（附加）图论，两种最小路径算法</li>
+<li>Linux<ol>
+<li>Linux进程调度算法</li>
+<li>Linux进程地址空间分布</li>
+<li>Linux内存管理方法，页面置换算法，逻辑地址和物理地址的转换</li>
+<li>在一台内存为2G的机器上，malloc(20G)会怎么样？new 20G呢？</li>
+<li></li>
+</ol>
+</li>
+</ol>
+<h2 id="JAVA特性"><a href="#JAVA特性" class="headerlink" title="JAVA特性"></a>JAVA特性</h2><ol>
+<li>ArrayList与LinkedList</li>
+<li>HashMap 与 Hashtable、ArrayList与Vector、StringBuilder与StringBuffer，concurrentHashMap</li>
+<li>详细介绍HashMap。角度：数据结构+扩容情况+put查找的详细过程+哈希函数+容量为什么始终都是2^N+JDK1.7与JDK1.8的区别。</li>
+<li>JAVA 创建一个对象的步骤<ol>
+<li>详细介绍类加载过程</li>
+</ol>
+</li>
+<li>线程池的概念与应用</li>
+<li>JAVA中内存怎么分区？JVM内存模型？堆怎么分区？<ol>
+<li>（JVM运行时内存划分？PC+虚拟机栈+本地方法栈+堆+方法区+JDK1.7与1.8区别）</li>
+</ol>
+</li>
+<li>JAVA的垃圾回收机制<ol>
+<li>Full GC触发条件</li>
+</ol>
+</li>
+<li>栈空间与堆空间的区别</li>
+<li>32位转64位程序需要考虑什么？如何知道程序是32位还是64位？</li>
+<li>抽象类和接口你倾向用哪个？什么场景下用抽象类</li>
+<li>多态实现原理</li>
+<li>谈谈对JAVA 泛型的理解<ol>
+<li>泛型以及泛型擦除。List&lt; A &gt;类型的list,可以加入无继承关系的B类型对象吗？如何加入？</li>
+</ol>
+</li>
+<li>虚函数的实现原理，子类构造析构函数的调用顺序</li>
+<li>Java异常体系</li>
+<li>JAVA反射原理以及使用场景</li>
+<li>内存泄漏的场景</li>
+<li>static关键字和final关键字使用情况，一个类不能被继承，除了final关键字之外，还有什么方法（从构造函数考虑）？</li>
+</ol>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><ol>
+<li>数据库三范式</li>
+<li>事物ACID</li>
+<li>视图<ol>
+<li>概念</li>
+</ol>
+</li>
+<li>索引<ol>
+<li>概念、类别</li>
+<li>适用场景、优缺点</li>
+<li>聚集索引与非聚集索引</li>
+<li>查看索引的效率</li>
+<li>建立索引的原则</li>
+<li>MYSQL索引用的底层数据结构（B+、Hash）<ol>
+<li>几种索引的区别？</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Mysql默认隔离级别？如何保证并发安全？</li>
+<li>介绍Inodb锁机制，行锁，表锁，意向锁</li>
+<li>存储过程</li>
+<li>触发器</li>
+<li>锁<ol>
+<li>共享锁与排他锁</li>
+<li>乐观锁与悲观锁</li>
+<li>锁的粒度（页级、表级、行级）</li>
+</ol>
+</li>
+<li>常见SQL写法！<ol>
+<li>常见的聚合函数？</li>
+<li>内连接、左外连接、右外连接</li>
+</ol>
+</li>
+<li>缓存的适用场景、更新模式</li>
+<li>关系型数据库<ol>
+<li>如何描述多对多的关系？</li>
+<li>如何在删除主表记录的同时，一同删除从表相关联的记录？</li>
+<li>级联的概念与应用场景</li>
+</ol>
+</li>
+<li>数据库约束有哪几种</li>
+<li>varchar与char的概念、异同</li>
+<li>B+树如何索引数据库？查找过程？</li>
+<li>非关系数据库和关系数据库的区别与优势的比较</li>
+<li>（附加）脏读、幻读、不可重复读的概念与解决方法</li>
+<li>（附加）数据库的主从控制的概念、原理</li>
+<li>Redis<ol>
+<li>为什么使用Redis</li>
+<li>分布式缓存和本地缓存有啥区别？让你自己设计本地缓存怎么设计？如何解决缓存过期问题？如何解决内存溢出问题？</li>
+<li>redis和mem***d的区别</li>
+<li>redis常用数据结构和使用场景</li>
+<li>redis过期淘汰策略</li>
+<li>redis持久化机制？都有什么优缺点？持久化的时候还能接受请求吗？</li>
+<li></li>
+<li>Redis 怎么保证不丢数据，能不能保证严格意义的一定不会丢</li>
+<li>Redis 集群，生产环境Redis 如何做数据迁移</li>
+<li>一致性hash算法</li>
+<li>如何保证缓存和数据库的数据一致性？</li>
+<li>讲一下缓存雪崩和缓存穿透的概念，以及解决方法</li>
+<li>五种IO模型的区别</li>
+<li>select、poll、epoll的区别？</li>
+</ol>
+</li>
+</ol>
+<h2 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h2><ol>
+<li>工厂方法模式与抽象工厂模式</li>
+<li>模板方法模式</li>
+<li>控制反转与依赖注入</li>
+<li>MVC</li>
+</ol>
+<h2 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h2><ol>
+<li>代理与反向代理</li>
+</ol>
+<h2 id="场景设计"><a href="#场景设计" class="headerlink" title="场景设计"></a>场景设计</h2><ol>
+<li>十亿个IP，获得访问次数最多的十个</li>
+<li>按时触发的任务，设计这个类</li>
+<li>从4亿qq号码中，统计出出现次数top 10的号码</li>
+<li>Linux有4G的物理内存，问开一个Java进程可以给8G内存吗？物理地址和虚拟地址的区别？</li>
+<li>500万个QQ号查找它的昵称，我说的是分割，按前面的位来分割后面用二分查找。5亿个呢？</li>
+<li>git的概念，merge和rebase的区别</li>
+<li>将矩形顺时针旋转90度，要求用公式解决</li>
+<li>总结双端链表插入元素的规则</li>
+<li>实现paserInt函数，要处理溢出问题</li>
+<li>有序带重复数组原地去重</li>
+<li>100亿黑名单URL，每个64B,判断一个URL是否在黑名单中</li>
+<li>2GB内存在20亿整数中找到出现次数最多的数</li>
+<li>40亿个非负整数中找到没有出现的数<ol>
+<li>40亿个非负整数中找到一个没有出现的数，内存限制10MB</li>
+</ol>
+</li>
+<li>找到100亿个URL中重复的URL</li>
+<li>海量搜索词汇，找到最热TOP100词汇的方法</li>
+<li>40亿个无符号整数，1GB内存，找到所有出现两次的数</li>
+<li>10MB内存，找到40亿整数的中位数</li>
+<li>设计短域名系统，将长URL转化成短的URL.(知乎老哥给出了答案，博客有人根据他的总结了一下，很好)</li>
+<li>让你系统的设计一个高并发的架构，你会从哪几个方面考虑？</li>
+<li>一个千万级的APP，你要搞定关注和粉丝列表，你用什么来做。要求最后一个关注的在最前面。新增和取关都要比较快的反馈你怎么做？如果一个人关注了之后，服务器宕机了怎么办？</li>
+<li>OOD design：计费停车场</li>
+<li>假设有这么一个场景，有一条新闻，新闻的评论量可能很大，如何设计评论的读和写</li>
+<li>显示网站的用户在线数的解决思路</li>
+</ol>
+<h2 id="项目准备"><a href="#项目准备" class="headerlink" title="项目准备"></a>项目准备</h2><ol>
+<li><p>要突出项目中的一些小亮点</p>
+<ol>
+<li>讲一下自己项目的安全性能</li>
+</ol>
+</li>
+<li><p>讲一下我的科研项目</p>
+</li>
+<li><p>讲一下我的SSM项目</p>
+<ol>
+<li>模仿</li>
+</ol>
+</li>
+<li><p>手写项目</p>
+<ol>
+<li>SSM、实现如上安全功能、应用Redis</li>
+</ol>
+</li>
+<li><p>SSM</p>
+<ol>
+<li><p>Spring IOC过程</p>
+<ol>
+<li>如何自己设计IOC框架？</li>
+<li>解释一下IOC和DI</li>
+</ol>
+</li>
+<li><p>AOP概念</p>
+</li>
+<li><p>bean</p>
+<ol>
+<li>bean的生命周期</li>
+<li>获得bean的配置步骤</li>
+<li>bean初始化顺序</li>
+</ol>
+</li>
+<li><p>autowired的实现原理</p>
+<ol>
+<li>@autowired和@resource的区别，当UserDao存在不止一个bean或没有存在时，会怎样?怎么解决？</li>
+</ol>
+</li>
+<li><p>对spring的理解，spring在项目中担任什么角色</p>
+</li>
+<li><p>Spring事务隔离级别和事务传播属性</p>
+</li>
+<li><p>Spring以及Spring MVC常见注解</p>
+</li>
+<li><p>mybatis如何防止sql注入？$#的区别是什么？传入表明用哪个？</p>
+</li>
+<li><p>Spring MVC工作原理</p>
+</li>
+<li><p>Mybatis和Hibernate的区别</p>
+</li>
+<li><p>spring中的注解原理？例如事务注解，spring如何根据注解实现事务功能的</p>
+</li>
+<li><p>Spring中用到了哪些设计模式？单例、***、工厂、适配、观察者之类的说一说就行</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="要准备的经典问题"><a href="#要准备的经典问题" class="headerlink" title="要准备的经典问题"></a>要准备的经典问题</h2><ol>
+<li>最近学了什么新技术？</li>
+<li>你平时是怎么学JAVA的？</li>
+<li>你平时是怎么学习的？</li>
+<li>业余活动？日常时间安排？</li>
+<li>说一下自己的优缺点</li>
+<li>HR面才考虑的问题<ol>
+<li>你未来的职业规划是如何？</li>
+<li>你有遇到过什么特别大的挫折吗？</li>
+<li>你感觉大学期间最有成就感的事情是什么？</li>
+<li>你喜欢什么样的工作？</li>
+<li>加班压力能承受吗？</li>
+</ol>
+</li>
+</ol>
+<h2 id="手撕代码"><a href="#手撕代码" class="headerlink" title="手撕代码"></a>手撕代码</h2><ol>
+<li>快排、归并、堆排序必须烂熟<ol>
+<li>用快排思想求无序数组中第K小的值如何写？时间复杂度多少？归并如何写？什么思想？用归并思想给链表排序如何写？用归并思想求数组中逆序对数如何写？M个长度为N的数组如何排序？时间复杂度多少？M个长度为N的链表如何排序？堆排序如何写，什么思想？时间复杂度怎么算的？符合堆的结构，插入和删除函数如何实现？</li>
+</ol>
+</li>
+<li>二分查找<ol>
+<li>有序数组直接考虑二分查找，如旋转有序数组的最小值、旋转有序数组查找目标值、有序数组目标值的最左和最右位置、二分查找寻找峰值，二分查找问题，要考虑while(left &lt;= right)是否可以等于，right = mid还是right = mid +1,返回值是left还是right，反正多考虑考虑边界问题</li>
+</ol>
+</li>
+<li>链表<ol>
+<li>链表逆序,快慢指针，保留pre节点和当前cur删除符合条件的节点</li>
+</ol>
+</li>
+<li>树<ol>
+<li>掌握层序遍历+size+flag、非递归中序遍历、非递归前序遍历、二叉搜索树特点、完全二叉树特点及善用递归解决树深度，树是否平衡，树节点最大距离，树节点最长带权路径，最近公共父节点</li>
+</ol>
+</li>
+<li>排列组合与回溯算法<ol>
+<li>总结排列组合类型的各自特点，以及考虑去重</li>
+</ol>
+</li>
+<li>刷题<ol>
+<li>剑全部，见<a href="https://www.nowcoder.com/discuss/344311" target="_blank" rel="noopener">https://www.nowcoder.com/discuss/344311</a></li>
+<li>LC，同上</li>
+<li>面试常见问题，同上<ol>
+<li>矩阵顺时针旋转90度</li>
+<li>字符串子串</li>
+<li>子数组最大和，子数组最小方差</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/22/RPC实战与核心原理-笔记（一）/" rel="next" title="RPC实战与核心原理-笔记（一）">
+                <i class="fa fa-chevron-left"></i> RPC实战与核心原理-笔记（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Tiro</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#元思想"><span class="nav-number">1.</span> <span class="nav-text">元思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-number">3.</span> <span class="nav-text">网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统"><span class="nav-number">4.</span> <span class="nav-text">操作系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA特性"><span class="nav-number">5.</span> <span class="nav-text">JAVA特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库"><span class="nav-number">6.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计模式"><span class="nav-number">7.</span> <span class="nav-text">设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全"><span class="nav-number">8.</span> <span class="nav-text">安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#场景设计"><span class="nav-number">9.</span> <span class="nav-text">场景设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目准备"><span class="nav-number">10.</span> <span class="nav-text">项目准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#要准备的经典问题"><span class="nav-number">11.</span> <span class="nav-text">要准备的经典问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手撕代码"><span class="nav-number">12.</span> <span class="nav-text">手撕代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tiro</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
