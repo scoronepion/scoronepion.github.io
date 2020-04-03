@@ -109,7 +109,7 @@
 <meta property="og:site_name" content="SCORONEPION">
 <meta property="og:description" content="1. 如何创建新线程两种方法：实现Runnable接口、集成Thread类 1.1 为什么实现Runnable接口比继承Thread类要好？ 从代码解耦角度来说，具体的任务（run方法）应该和创建及运行线程的机制（Thread类）解耦，Runnable接口可以实现解耦 使用继承Thread类这一方式时，每次想新建一个任务，只能新建一个独立线程，这么做资源消耗很大，使用Runnable和线程池，就可">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-03T14:34:26.575Z">
+<meta property="og:updated_time" content="2020-04-03T14:45:22.529Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线程基础（Java）">
 <meta name="twitter:description" content="1. 如何创建新线程两种方法：实现Runnable接口、集成Thread类 1.1 为什么实现Runnable接口比继承Thread类要好？ 从代码解耦角度来说，具体的任务（run方法）应该和创建及运行线程的机制（Thread类）解耦，Runnable接口可以实现解耦 使用继承Thread类这一方式时，每次想新建一个任务，只能新建一个独立线程，这么做资源消耗很大，使用Runnable和线程池，就可">
@@ -351,7 +351,7 @@
                 
               
 
-              <time title="创建时间：2020-04-03 12:17:23 / 修改时间：22:34:26" itemprop="dateCreated datePublished" datetime="2020-04-03T12:17:23+08:00">2020-04-03</time>
+              <time title="创建时间：2020-04-03 12:17:23 / 修改时间：22:45:22" itemprop="dateCreated datePublished" datetime="2020-04-03T12:17:23+08:00">2020-04-03</time>
             
 
             
@@ -393,16 +393,25 @@
 <h3 id="1-1-为什么实现Runnable接口比继承Thread类要好？"><a href="#1-1-为什么实现Runnable接口比继承Thread类要好？" class="headerlink" title="1.1 为什么实现Runnable接口比继承Thread类要好？"></a>1.1 为什么实现Runnable接口比继承Thread类要好？</h3><ol>
 <li>从代码解耦角度来说，具体的任务（run方法）应该和创建及运行线程的机制（Thread类）解耦，Runnable接口可以实现解耦</li>
 <li>使用继承Thread类这一方式时，每次想新建一个任务，只能新建一个独立线程，这么做资源消耗很大，使用Runnable和线程池，就可以大大减小这种损耗。</li>
-<li>继承Thread类后，因为Java不支持双继承，因此无法再继承其他的类，限制了扩展性。<h3 id="1-2-Runnable和Thread的本质区别"><a href="#1-2-Runnable和Thread的本质区别" class="headerlink" title="1.2 Runnable和Thread的本质区别"></a>1.2 Runnable和Thread的本质区别</h3>两者本质上没有区别，都是调用<code>start()</code>方法新建线程。两者区别主要在于<code>run()</code>方法的来源：实现Runnable接口最终调用的是<code>target.run()</code>，继承Thread类是整个<code>run()</code>被重写。<h3 id="1-3-如何完整回答“有多少种线程实现方法”？"><a href="#1-3-如何完整回答“有多少种线程实现方法”？" class="headerlink" title="1.3 如何完整回答“有多少种线程实现方法”？"></a>1.3 如何完整回答“有多少种线程实现方法”？</h3></li>
+<li>继承Thread类后，因为Java不支持双继承，因此无法再继承其他的类，限制了扩展性。</li>
+</ol>
+<h3 id="1-2-Runnable和Thread的本质区别"><a href="#1-2-Runnable和Thread的本质区别" class="headerlink" title="1.2 Runnable和Thread的本质区别"></a>1.2 Runnable和Thread的本质区别</h3><p>两者本质上没有区别，都是调用<code>start()</code>方法新建线程。两者区别主要在于<code>run()</code>方法的来源：实现Runnable接口最终调用的是<code>target.run()</code>，继承Thread类是整个<code>run()</code>被重写。</p>
+<h3 id="1-3-如何完整回答“有多少种线程实现方法”？"><a href="#1-3-如何完整回答“有多少种线程实现方法”？" class="headerlink" title="1.3 如何完整回答“有多少种线程实现方法”？"></a>1.3 如何完整回答“有多少种线程实现方法”？</h3><ol>
 <li>从实现本质看，有两种方法：<strong>实现Runnable接口并传入Thread类</strong>和<strong>继承Thread类然后重写run()</strong>。</li>
 <li>这两种方法本质上没有区别，都是调用了<code>start()</code>方法新建线程，这两种方法的主要区别在于<code>run()</code>方法的内容来源。</li>
 <li>一种是重写<code>run()</code>方法，另一种是实现Runnable接口的<code>run()</code>方法，然后将这个runnable实例传递给Thread类。</li>
-<li>线程池、定时器、lambda表达式、匿名内部类也可以创建线程，但本质也是这两种方法。<h3 id="1-4-start-方法的执行流程（一个线程调用两次start-会发生什么）"><a href="#1-4-start-方法的执行流程（一个线程调用两次start-会发生什么）" class="headerlink" title="1.4 start()方法的执行流程（一个线程调用两次start()会发生什么）"></a>1.4 start()方法的执行流程（一个线程调用两次start()会发生什么）</h3></li>
+<li>线程池、定时器、lambda表达式、匿名内部类也可以创建线程，但本质也是这两种方法。</li>
+</ol>
+<h3 id="1-4-start-方法的执行流程（一个线程调用两次start-会发生什么）"><a href="#1-4-start-方法的执行流程（一个线程调用两次start-会发生什么）" class="headerlink" title="1.4 start()方法的执行流程（一个线程调用两次start()会发生什么）"></a>1.4 start()方法的执行流程（一个线程调用两次start()会发生什么）</h3><ol>
 <li>检查线程状态，只有NEW状态下的线程才能继续，否则抛出<code>IllegalThreadStateException</code>，意为在运行中或者已结束的线程，都不能再次启动。</li>
 <li>线程被加入线程组</li>
-<li>调用start0()方法（native方法）启动线程<h3 id="1-5-为什么选择调用start-方法而不是直接调用run-方法"><a href="#1-5-为什么选择调用start-方法而不是直接调用run-方法" class="headerlink" title="1.5 为什么选择调用start()方法而不是直接调用run()方法"></a>1.5 为什么选择调用start()方法而不是直接调用run()方法</h3>start()方法才是真正意义上启动一个线程，直接调用run()方法，它只是一个普通方法而已，不会用子线程去调用。<h2 id="2-如何停止线程"><a href="#2-如何停止线程" class="headerlink" title="2. 如何停止线程"></a>2. 如何停止线程</h2>在Java中，最好的停止线程的方法是使用interrupt，但这仅仅会通知被终止的线程“该停止运行了”，被终止的进程自己拥有决定权，决定是否以及何时终止。我们不希望线程立即停止，因为这会使得共享的数据结构不一致。正确做法应该是使用协作：当需要停止时，首先清除当前正在执行的工作，然后再结束。<h3 id="2-1-线程被阻塞是遇到interrupt信号怎么办？"><a href="#2-1-线程被阻塞是遇到interrupt信号怎么办？" class="headerlink" title="2.1 线程被阻塞是遇到interrupt信号怎么办？"></a>2.1 线程被阻塞是遇到interrupt信号怎么办？</h3>被阻塞时遇到interrupt信号，线程会抛出<code>InterruptException: sleep interrupt</code>异常。这也是为什么代码中含有能够阻塞线程的操作时（sleep等），必须使用try catch处理异常。<h3 id="2-2-while内try-catch存在什么问题？"><a href="#2-2-while内try-catch存在什么问题？" class="headerlink" title="2.2 while内try catch存在什么问题？"></a>2.2 while内try catch存在什么问题？</h3>Java在设计sleep函数的时候，一旦线程响应中断，就会清除线程的interrupt标记位。所以在while内部进行try catch不能中断线程。<h3 id="2-3-处理中断最好的方法是什么？"><a href="#2-3-处理中断最好的方法是什么？" class="headerlink" title="2.3 处理中断最好的方法是什么？"></a>2.3 处理中断最好的方法是什么？</h3>优先选择在方法上抛出异常。使用<code>throws InterruptedException</code>标记你的方法，不使用try/catch语句块捕获异常，以便于该异常可以传递到顶层，让run方法可以捕获这一异常。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">subTask</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    sleep(delay);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
+<li>调用start0()方法（native方法）启动线程</li>
 </ol>
+<h3 id="1-5-为什么选择调用start-方法而不是直接调用run-方法"><a href="#1-5-为什么选择调用start-方法而不是直接调用run-方法" class="headerlink" title="1.5 为什么选择调用start()方法而不是直接调用run()方法"></a>1.5 为什么选择调用start()方法而不是直接调用run()方法</h3><p>start()方法才是真正意义上启动一个线程，直接调用run()方法，它只是一个普通方法而已，不会用子线程去调用。</p>
+<h2 id="2-如何停止线程"><a href="#2-如何停止线程" class="headerlink" title="2. 如何停止线程"></a>2. 如何停止线程</h2><p>在Java中，最好的停止线程的方法是使用interrupt，但这仅仅会通知被终止的线程“该停止运行了”，被终止的进程自己拥有决定权，决定是否以及何时终止。我们不希望线程立即停止，因为这会使得共享的数据结构不一致。正确做法应该是使用协作：当需要停止时，首先清除当前正在执行的工作，然后再结束。</p>
+<h3 id="2-1-线程被阻塞是遇到interrupt信号怎么办？"><a href="#2-1-线程被阻塞是遇到interrupt信号怎么办？" class="headerlink" title="2.1 线程被阻塞是遇到interrupt信号怎么办？"></a>2.1 线程被阻塞是遇到interrupt信号怎么办？</h3><p>被阻塞时遇到interrupt信号，线程会抛出<code>InterruptException: sleep interrupt</code>异常。这也是为什么代码中含有能够阻塞线程的操作时（sleep等），必须使用try catch处理异常。</p>
+<h3 id="2-2-while内try-catch存在什么问题？"><a href="#2-2-while内try-catch存在什么问题？" class="headerlink" title="2.2 while内try catch存在什么问题？"></a>2.2 while内try catch存在什么问题？</h3><p>Java在设计sleep函数的时候，一旦线程响应中断，就会清除线程的interrupt标记位。所以在while内部进行try catch不能中断线程。</p>
+<h3 id="2-3-处理中断最好的方法是什么？"><a href="#2-3-处理中断最好的方法是什么？" class="headerlink" title="2.3 处理中断最好的方法是什么？"></a>2.3 处理中断最好的方法是什么？</h3><p>优先选择在方法上抛出异常。使用<code>throws InterruptedException</code>标记你的方法，不使用try/catch语句块捕获异常，以便于该异常可以传递到顶层，让run方法可以捕获这一异常。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">subTask</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    sleep(delay);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>由于run方法无法抛出<code>checked Exception</code>，只能用try/catch，顶层方法必须处理异常，避免了漏掉或者被吞掉的情况，增强了代码的健壮性。</p>
 <h3 id="2-4-如果不能抛出中断，要怎么做？"><a href="#2-4-如果不能抛出中断，要怎么做？" class="headerlink" title="2.4 如果不能抛出中断，要怎么做？"></a>2.4 如果不能抛出中断，要怎么做？</h3><p>如果不想或者不能传递<code>InterruptedException</code>，那么应该在catch子语句中调用<code>Thread.currentThread().interrupt()</code>来恢复设置中断状态，以便在后续的执行中依然能够检测到刚才发生了中断。</p>
 
