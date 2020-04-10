@@ -109,7 +109,7 @@
 <meta property="og:site_name" content="SCORONEPION">
 <meta property="og:description" content="1. 如何创建新线程两种方法：实现Runnable接口、集成Thread类 1.1 为什么实现Runnable接口比继承Thread类要好？ 从代码解耦角度来说，具体的任务（run方法）应该和创建及运行线程的机制（Thread类）解耦，Runnable接口可以实现解耦 使用继承Thread类这一方式时，每次想新建一个任务，只能新建一个独立线程，这么做资源消耗很大，使用Runnable和线程池，就可">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-10T07:09:02.033Z">
+<meta property="og:updated_time" content="2020-04-10T07:11:26.140Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线程基础（Java）">
 <meta name="twitter:description" content="1. 如何创建新线程两种方法：实现Runnable接口、集成Thread类 1.1 为什么实现Runnable接口比继承Thread类要好？ 从代码解耦角度来说，具体的任务（run方法）应该和创建及运行线程的机制（Thread类）解耦，Runnable接口可以实现解耦 使用继承Thread类这一方式时，每次想新建一个任务，只能新建一个独立线程，这么做资源消耗很大，使用Runnable和线程池，就可">
@@ -368,7 +368,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-10 15:09:02" itemprop="dateModified" datetime="2020-04-10T15:09:02+08:00">2020-04-10</time>
+                <time title="修改时间：2020-04-10 15:11:26" itemprop="dateModified" datetime="2020-04-10T15:11:26+08:00">2020-04-10</time>
               
             
           </span>
@@ -462,7 +462,8 @@
 <h3 id="4-5-wait方法属于Object对象，那么调用Thread-wait会发生什么？"><a href="#4-5-wait方法属于Object对象，那么调用Thread-wait会发生什么？" class="headerlink" title="4.5 wait方法属于Object对象，那么调用Thread.wait会发生什么？"></a>4.5 wait方法属于Object对象，那么调用Thread.wait会发生什么？</h3><p>线程在退出时会自动执行notify，所以应该避免使用Thread.wait，不应该将线程作为一把锁</p>
 <h3 id="4-6-notifyAll之后所有的线程都会再次抢夺锁，如果某线程抢夺失败怎么办？"><a href="#4-6-notifyAll之后所有的线程都会再次抢夺锁，如果某线程抢夺失败怎么办？" class="headerlink" title="4.6 notifyAll之后所有的线程都会再次抢夺锁，如果某线程抢夺失败怎么办？"></a>4.6 notifyAll之后所有的线程都会再次抢夺锁，如果某线程<strong>抢夺失败</strong>怎么办？</h3><p>重新回到等待状态，等待锁持有者释放锁或者接收线程调度器的调度</p>
 <h3 id="4-7-sleep方法"><a href="#4-7-sleep方法" class="headerlink" title="4.7 sleep方法"></a>4.7 sleep方法</h3><p>sleep方法可以让线程进入WAITING状态，并且不占用CPU资源，但是<strong>不释放锁</strong>，直到规定时间后再执行，休眠期间如果被中断，会抛出异常并清除中断状态。</p>
-<p>最佳实践：使用<code>TimeUnit.SECONDS.sleep()</code>。优点：写法简单，且不用担心负数传参，<code>Thread.sleep()</code>收到负数参数后会抛出异常。例如休眠3小时25分1秒，用此方法则为<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TimeUnit.HOURS.sleep(<span class="number">3</span>);</span><br><span class="line">TimeUnit.MINUTES.sleep(<span class="number">25</span>);</span><br><span class="line">TimeUnit.SECONDS.sleep(<span class="number">1</span>);</span><br></pre></td></tr></table></figure></p>
+<p>最佳实践：使用<code>TimeUnit.SECONDS.sleep()</code>。优点：写法简单，且不用担心负数传参，<code>Thread.sleep()</code>收到负数参数后会抛出异常。例如休眠3小时25分1秒，用此方法则为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TimeUnit.HOURS.sleep(<span class="number">3</span>);</span><br><span class="line">TimeUnit.MINUTES.sleep(<span class="number">25</span>);</span><br><span class="line">TimeUnit.SECONDS.sleep(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
 <h3 id="4-8-wait-notify、sleep异同（方法属于哪个对象？线程状态怎么切换？）"><a href="#4-8-wait-notify、sleep异同（方法属于哪个对象？线程状态怎么切换？）" class="headerlink" title="4.8 wait/notify、sleep异同（方法属于哪个对象？线程状态怎么切换？）"></a>4.8 wait/notify、sleep异同（方法属于哪个对象？线程状态怎么切换？）</h3><p><strong>相同点</strong>：</p>
 <ol>
 <li>wait和sleep方法都可以使线程阻塞，对应线程状态是WAITING和TIMED_WAITING。</li>
@@ -477,7 +478,8 @@
 </ol>
 <h3 id="4-9-join方法"><a href="#4-9-join方法" class="headerlink" title="4.9 join方法"></a>4.9 join方法</h3><p>新线程加入了我们，所以我们要等他执行完再出发。</p>
 <p>join期间，主线程被中断的话，应该在join方法捕获中断的代码里中断子线程，否则子线程会继续执行。join内部使用了wait进行休眠，但是没有显式调用notify来唤醒，这是因为每个Thread类在执行完run方法后，会自动执行notify_all操作来唤醒。</p>
-<p>join的等价写法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 以thread实例本身作为锁，主线程运行到这里时，拿到thread的锁，执行里面的wait，陷入休眠状态。直到thread的run方法执行完毕后，调用notify_all唤醒，继续执行下面的语句。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// thread.join()</span></span><br><span class="line"><span class="keyword">synchronized</span> (thread) &#123;</span><br><span class="line">    thread.wait();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>join的等价写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 以thread实例本身作为锁，主线程运行到这里时，拿到thread的锁，执行里面的wait，陷入休眠状态。直到thread的run方法执行完毕后，调用notify_all唤醒，继续执行下面的语句。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// thread.join()</span></span><br><span class="line"><span class="keyword">synchronized</span> (thread) &#123;</span><br><span class="line">    thread.wait();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>在join期间，线程处于WAITING状态</strong></p>
 <h3 id="4-10-yield方法"><a href="#4-10-yield方法" class="headerlink" title="4.10 yield方法"></a>4.10 yield方法</h3><p>作用：释放cpu时间片，但是线程状态依然是RUNNABLE状态，不会释放锁，随时可能被CPU调度起来。</p>
 <p>与sleep的区别：调用sleep后，调度器不会主动调度该线程，yield则可能随时被调度器调度</p>
