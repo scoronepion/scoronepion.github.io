@@ -109,7 +109,7 @@
 <meta property="og:site_name" content="SCORONEPION">
 <meta property="og:description" content="1. Java内存模型1.1 从Java代码到CPU指令的过程 编写Java代码，*.java文件 使用编译命令（javac）生成Java字节码文件*.class，字节码文件是平台无关的 JVM执行字节码文件，并将字节码转换为机器指令 机器指令在CPU上运行  不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JM">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-12T03:48:47.802Z">
+<meta property="og:updated_time" content="2020-04-12T14:43:23.735Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java并发编程底层原理——慕课笔记">
 <meta name="twitter:description" content="1. Java内存模型1.1 从Java代码到CPU指令的过程 编写Java代码，*.java文件 使用编译命令（javac）生成Java字节码文件*.class，字节码文件是平台无关的 JVM执行字节码文件，并将字节码转换为机器指令 机器指令在CPU上运行  不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JM">
@@ -368,7 +368,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-12 11:48:47" itemprop="dateModified" datetime="2020-04-12T11:48:47+08:00">2020-04-12</time>
+                <time title="修改时间：2020-04-12 22:43:23" itemprop="dateModified" datetime="2020-04-12T22:43:23+08:00">2020-04-12</time>
               
             
           </span>
@@ -468,6 +468,93 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">// main</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">volatile</span> b = <span class="number">2</span>;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// writerThread</span></span><br><span class="line">a = <span class="number">3</span>;</span><br><span class="line">b = a;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// readerThread</span></span><br><span class="line">print(a, b);</span><br></pre></td></tr></table></figure>
 <p>给b加了<code>volatile</code>，不仅b被影响，还可以实现<strong>轻量级同步</strong>。</p>
 <p>b之前的写入(b=a)对读取b后的代码(print b)都可见，所以在writerThread里对a的赋值，一定会对readerThread里的读取可见。所以即使这里的a不加<code>volatile</code>，只要b读到的是3，就可以由happens-before原则保证读取的a是3而不是1.</p>
+<h3 id="1-7-volatile概念"><a href="#1-7-volatile概念" class="headerlink" title="1.7 volatile概念"></a>1.7 volatile概念</h3><p>volatile是一种同步机制，比synchronized或者Lock相关类更轻量，因为使用volatile并不会发生上下文切换等开销很大的行为。如果一个变量被修饰为volatile，那么JVM就知道这个变量可能会被并发修改，就会进行额外操作（比如禁用重排序）。</p>
+<p>开销小，相应的能力也小，虽说volatile是用来同步的保证线程安全的，但是volatile做不到synchronized那样的<strong>原子保护</strong>，volatile仅在有限场景下才能发挥作用。</p>
+<p>使用场景：</p>
+<ol>
+<li>boolean flag，如果一个共享变量自始自终只被各个线程赋值，而没有其他操作。那么就可以使用volatile代替synchronized或者代替原子变量，因为赋值自身是具有原子性的，而volatile又保证了可见性，满足线程安全。</li>
+<li>作为刷新之前变量的触发器。由于happens-before原则保证读取volatile变量时可以看到volatile变量赋值前的所有操作，因此可以设置一个触发器变量，读取这个变量的时候，就可以看到变量赋值前的所有操作，例如：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Map configOptions;</span><br><span class="line"><span class="keyword">char</span>[] configText;</span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">boolean</span> initialized = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Thread A</span></span><br><span class="line">configOptions = <span class="keyword">new</span> HashMap();</span><br><span class="line">configText = readConfigFile(fileName);</span><br><span class="line">processConfigOprions(configText, configOptions);</span><br><span class="line">initialized = <span class="keyword">true</span>;   <span class="comment">// 触发器变量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Thread B</span></span><br><span class="line"><span class="keyword">while</span> (!initialized)  <span class="comment">// 读取时，可以看到赋值之前的（9行之前）的所有操作</span></span><br><span class="line">    sleep();</span><br><span class="line"><span class="comment">// use configOptions</span></span><br></pre></td></tr></table></figure>
+<p>volatile有两点作用：</p>
+<ol>
+<li>可见性：读取一个volatile变量之前，需要先使相应的<strong>本地缓存失效</strong>，这样就必须到<strong>主内存读取最新值</strong>，写一个volatile变量会<strong>立即刷入到主内存</strong>。</li>
+<li>禁止指令重排优化：解决单例双重锁乱序问题。</li>
+</ol>
+<p>volatile和synchronized的关系？</p>
+<p>volatile在这方面可以看作轻量版synchronized：如果一个共享变量自始自终只被各个线程赋值，而没有其他操作，那么就可以用volatile代替synchronized或者原子变量。因为赋值是原子性的，volatile保证了可见性，所以满足线程安全</p>
+<p>总结：</p>
+<ol>
+<li>volatile修饰符适用于以下场景：<ol>
+<li>某个属性被多个线程共享，其中有一个线程修改了此属性，其他线程可以立即得到修改后的值，比如boolean flag</li>
+<li>作为触发器，实现轻量级同步</li>
+</ol>
+</li>
+<li>volatile属性读写操作都是无锁的，它不能代替synchronized，因为它没有提供原子性和互斥性。因为无锁，不需要花费时间在获取锁和释放锁上，所以说它是低成本的。</li>
+<li>volatile只能作用于属性，用volatile修饰属性，JVM就不会对该属性进行指令重排序。</li>
+<li>volatile提供可见性，任何一个线程对其的修改立马对其他线程可见。读取始终<strong>从主存中读取</strong>。</li>
+<li>volatile提供了happens-before保证，对volatile变量v的写入happens-before所有其他线程后续对v的读操作</li>
+<li>volatile使得long和double的赋值是原子的</li>
+</ol>
+<h3 id="1-8-保证可见性的措施"><a href="#1-8-保证可见性的措施" class="headerlink" title="1.8 保证可见性的措施"></a>1.8 保证可见性的措施</h3><p>除了volatile可以让变量保证可见性以外，synchronized、Lock、并发集合、Thread.join()和Thread.start()都可以保证可见性。具体看happens-before原则的规定。</p>
+<h3 id="1-9-对synchronized可见性的正确理解"><a href="#1-9-对synchronized可见性的正确理解" class="headerlink" title="1.9 对synchronized可见性的正确理解"></a>1.9 对synchronized可见性的正确理解</h3><ol>
+<li>synchronized不仅保证了原子性，还保证了<strong>可见性</strong></li>
+<li>synchronized不仅让被保护的代码更安全，还让之前的代码可见了（依然是可见性）</li>
+</ol>
+<h3 id="1-10-原子性"><a href="#1-10-原子性" class="headerlink" title="1.10 原子性"></a>1.10 原子性</h3><p>一系列操作，要么全部执行，要么全部不执行，不会出现执行一半的情况，那么说明这一系列操作具有原子性。</p>
+<p>Java中的原子操作：</p>
+<ul>
+<li>除long和double之外的<strong>基本类型</strong>（int，byte，boolean，short，char，float）的赋值操作</li>
+<li>所有引用reference的赋值操作，不管32位机器还是64位机器</li>
+<li><code>java.concurrent.Atomic.*</code>包中所有类的原子操作</li>
+</ul>
+<p>Java中，long和double是64位的，在32位JVM上分为两次写入，每次写32位，所以不是原子操作。volatile long和volatile double是原子操作。在64位JVM上，long和double是原子操作。</p>
+<p><strong>原子操作 + 原子操作 != 原子操作</strong></p>
+<h2 id="2-单例模式"><a href="#2-单例模式" class="headerlink" title="2. 单例模式"></a>2. 单例模式</h2><h3 id="2-1-为什么需要单例模式"><a href="#2-1-为什么需要单例模式" class="headerlink" title="2.1 为什么需要单例模式"></a>2.1 为什么需要单例模式</h3><p>节约内存和计算、保证结果正确、方便管理</p>
+<h3 id="2-2-适用场景"><a href="#2-2-适用场景" class="headerlink" title="2.2 适用场景"></a>2.2 适用场景</h3><ol>
+<li>无状态的工具类：比如日志工具类，不管在哪里使用，我们只需要它帮我们记录日志，除此之外，并不需要在实例对象上存储任何状态，这时候只需要一个实例对象即可。</li>
+<li>全局信息类：比如某个类记录网站访问次数。</li>
+</ol>
+<h3 id="2-3-8种写法"><a href="#2-3-8种写法" class="headerlink" title="2.3 8种写法"></a>2.3 8种写法</h3><ol>
+<li><p>饿汉式（静态常量）（可用）<br>优点：写法简单，静态类装载的时候就实现了实例化，保证了线程安全。</p>
+</li>
+<li><p>饿汉式（静态代码块）（可用）<br>与1的区别在于实例化过程移到了静态代码块内</p>
+</li>
+<li><p><del>懒汉式（线程不安全）（不可用）</del><br>会创建两个实例，违反单例模式规则</p>
+</li>
+<li><p>懒汉式（线程安全，同步方法）（不推荐使用）<br>效率太低，获取实例方法被synchronized修饰后无法并行。</p>
+</li>
+<li><p><del>懒汉式（线程不安全，同步代码块）（不可用）</del><br>会创建两个实例，违反单例模式规则</p>
+</li>
+<li><p><strong>双重检查（推荐面试使用）</strong><br>优点：线程安全；延迟加载；效率较高。</p>
+</li>
+</ol>
+<p>为什么要双重检查？为了线程安全，如果只做一次检查，假如两个线程同时进入到synchronized代码处，两个线程就会先后创建两个实例。</p>
+<p>如果synchronized放在方法上就是第4种写法，这种写法会造成性能问题。</p>
+<p>为什么要用volatile？因为新建对象不是原子操作，它分为3个步骤（创建一个空对象、调用构造函数、赋值给引用）。JVM中存在指令重排序优化，所以这三个步骤可能会乱序。假如JVM将这三个步骤重排序成了1-3-2，那么线程A执行完1和3之后，突然被切走，此时实例不为空，但是徒有其表，里面的成员变量都为空。这时线程B执行第一重判断的时候，判断实例不为空，跳过了整个synchronized代码块，返回未初始化完全的实例对象，造成错误。所以需要使用volatile禁止重排序</p>
+<ol>
+<li><p>静态内部类（推荐用）<br>外部类加载时并不需要立即加载内部类，内部类不被加载则不去初始化INSTANCE，故而不占内存。只有在第一次调用<code>getInstance()</code>时，才会初始化INSTANCE，初始化实例的过程也是线程安全的。JVM在初始化静态变量的时候执行<code>clinit</code>，JVM会保证这一方法在多线程环境中被正确地加锁、同步，如果多个线程同时初始化一个类，那么只会有一个线程去执行<code>clinit</code>方法，其他线程都必须阻塞等待，直到活动线程执行完<code>clinit</code>。</p>
+</li>
+<li><p><strong>枚举</strong></p>
+</li>
+</ol>
+<p>饿汉：简单，但是没有延迟加载<br>懒汉：容易有线程安全问题<br>静态内部类：可用<br><strong>双重检查：面试用</strong><br><strong>枚举：工作中最佳实践</strong></p>
+<p>哪种方法实现单例最好？</p>
+<blockquote>
+<p>Joshua Bloch大神在《Effective Java》中明确表达过：使用枚举实现单例的方法最然还没有被广泛使用，但是已成为了<strong>最佳方法</strong></p>
+</blockquote>
+<p>枚举写法简单，线程安全有保障。枚举本质是一个静态对象。<strong>避免反序列化破坏单例</strong></p>
+<h2 id="2-4-面试常见问题"><a href="#2-4-面试常见问题" class="headerlink" title="2.4 面试常见问题"></a>2.4 面试常见问题</h2><h3 id="2-4-1-饿汉式的缺点"><a href="#2-4-1-饿汉式的缺点" class="headerlink" title="2.4.1 饿汉式的缺点"></a>2.4.1 饿汉式的缺点</h3><p>一开始就加载资源，有时候并不需要用到这个实例，就会造成资源浪费</p>
+<h3 id="2-4-2-懒汉式的缺点"><a href="#2-4-2-懒汉式的缺点" class="headerlink" title="2.4.2 懒汉式的缺点"></a>2.4.2 懒汉式的缺点</h3><p>写法复杂，容易写成线程不安全的情况</p>
+<h3 id="2-4-3-为什么用双重检查？不用就不安全吗？为什么用volatile？"><a href="#2-4-3-为什么用双重检查？不用就不安全吗？为什么用volatile？" class="headerlink" title="2.4.3 为什么用双重检查？不用就不安全吗？为什么用volatile？"></a>2.4.3 为什么用双重检查？不用就不安全吗？为什么用volatile？</h3><p>为了线程安全，如果只做一次检查，假如两个线程同时进入到synchronized代码处，两个线程就会先后创建两个实例，违反线程安全原则。</p>
+<p>如果synchronized放在方法上就是第4种写法，这种写法会造成性能问题。</p>
+<p>参见前文</p>
+<h3 id="2-4-4-哪种方法实现单例模式最好？"><a href="#2-4-4-哪种方法实现单例模式最好？" class="headerlink" title="2.4.4 哪种方法实现单例模式最好？"></a>2.4.4 哪种方法实现单例模式最好？</h3><p>枚举</p>
+<h3 id="2-4-5-讲一讲Java内存模型"><a href="#2-4-5-讲一讲Java内存模型" class="headerlink" title="2.4.5 讲一讲Java内存模型"></a>2.4.5 讲一讲Java内存模型</h3><p>起因 - 三种概念（JVM内存结构、Java内存模型、Java对象模型）- 是一组规范，规范了JVM、CPU和Java代码之间的转换关系 - 最重要的三个特征 - 重排序 - 可见性 - 本地内存和主内存 - happensbefore - volatile（使用场合、与synchronized的关系） - 对synchronized的理解 - 原子性 - Java中三种原子性操作</p>
+<h3 id="2-4-6-volatile与synchronized的异同"><a href="#2-4-6-volatile与synchronized的异同" class="headerlink" title="2.4.6 volatile与synchronized的异同"></a>2.4.6 volatile与synchronized的异同</h3><p>volatile在这方面可以看作轻量版synchronized：如果一个共享变量自始自终只被各个线程赋值，而没有其他操作，那么就可以用volatile代替synchronized或者原子变量。因为赋值是原子性的，volatile保证了可见性，所以满足线程安全</p>
+<h3 id="2-4-7-什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？"><a href="#2-4-7-什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？" class="headerlink" title="2.4.7 什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？"></a>2.4.7 什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？</h3><p>前面都写了</p>
+<h3 id="2-4-8-什么是内存可见性问题"><a href="#2-4-8-什么是内存可见性问题" class="headerlink" title="2.4.8 什么是内存可见性问题"></a>2.4.8 什么是内存可见性问题</h3><p>多级缓存造成的可见性问题</p>
+<h3 id="2-4-9-64位double和long写入是原子的吗？"><a href="#2-4-9-64位double和long写入是原子的吗？" class="headerlink" title="2.4.9 64位double和long写入是原子的吗？"></a>2.4.9 64位double和long写入是原子的吗？</h3><p>Java没有规定是否是原子的，32位JVM上，写入时前32位和后32位是分步写入的，不是原子操作。64位JVM是原子操作。但是商用JVM中不存在这个问题，实际开发中不需要考虑</p>
 
       
     </div>
@@ -634,7 +721,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Java内存模型"><span class="nav-number">1.</span> <span class="nav-text">1. Java内存模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-从Java代码到CPU指令的过程"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 从Java代码到CPU指令的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-JVM内存结构、Java内存模型、Java对象模型"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 JVM内存结构、Java内存模型、Java对象模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-JVM内存结构"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1 JVM内存结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-Java对象模型"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2 Java对象模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-3-Java内存模型JMM"><span class="nav-number">1.2.3.</span> <span class="nav-text">1.2.3 Java内存模型JMM</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-重排序"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 重排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-可见性"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-JMM的抽象：主内存和本地内存"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 JMM的抽象：主内存和本地内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-Happens-Before原则"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 Happens-Before原则</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Java内存模型"><span class="nav-number">1.</span> <span class="nav-text">1. Java内存模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-从Java代码到CPU指令的过程"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 从Java代码到CPU指令的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-JVM内存结构、Java内存模型、Java对象模型"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 JVM内存结构、Java内存模型、Java对象模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-JVM内存结构"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1 JVM内存结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-Java对象模型"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2 Java对象模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-3-Java内存模型JMM"><span class="nav-number">1.2.3.</span> <span class="nav-text">1.2.3 Java内存模型JMM</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-重排序"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 重排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-可见性"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-JMM的抽象：主内存和本地内存"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 JMM的抽象：主内存和本地内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-Happens-Before原则"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 Happens-Before原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-volatile概念"><span class="nav-number">1.7.</span> <span class="nav-text">1.7 volatile概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-8-保证可见性的措施"><span class="nav-number">1.8.</span> <span class="nav-text">1.8 保证可见性的措施</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-9-对synchronized可见性的正确理解"><span class="nav-number">1.9.</span> <span class="nav-text">1.9 对synchronized可见性的正确理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-10-原子性"><span class="nav-number">1.10.</span> <span class="nav-text">1.10 原子性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-单例模式"><span class="nav-number">2.</span> <span class="nav-text">2. 单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-为什么需要单例模式"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 为什么需要单例模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-适用场景"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 适用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-8种写法"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 8种写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-面试常见问题"><span class="nav-number">3.</span> <span class="nav-text">2.4 面试常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-饿汉式的缺点"><span class="nav-number">3.1.</span> <span class="nav-text">2.4.1 饿汉式的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-懒汉式的缺点"><span class="nav-number">3.2.</span> <span class="nav-text">2.4.2 懒汉式的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-为什么用双重检查？不用就不安全吗？为什么用volatile？"><span class="nav-number">3.3.</span> <span class="nav-text">2.4.3 为什么用双重检查？不用就不安全吗？为什么用volatile？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-4-哪种方法实现单例模式最好？"><span class="nav-number">3.4.</span> <span class="nav-text">2.4.4 哪种方法实现单例模式最好？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-5-讲一讲Java内存模型"><span class="nav-number">3.5.</span> <span class="nav-text">2.4.5 讲一讲Java内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-6-volatile与synchronized的异同"><span class="nav-number">3.6.</span> <span class="nav-text">2.4.6 volatile与synchronized的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-7-什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？"><span class="nav-number">3.7.</span> <span class="nav-text">2.4.7 什么是原子操作？Java中有哪些原子操作？生成对象的过程是不是原子操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-8-什么是内存可见性问题"><span class="nav-number">3.8.</span> <span class="nav-text">2.4.8 什么是内存可见性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-9-64位double和long写入是原子的吗？"><span class="nav-number">3.9.</span> <span class="nav-text">2.4.9 64位double和long写入是原子的吗？</span></a></li></ol></li></ol></div>
             
 
           </div>
