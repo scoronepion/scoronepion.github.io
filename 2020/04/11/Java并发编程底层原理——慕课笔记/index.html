@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. Java内存模型1.1 从Java代码到CPU指令的过程 编写Java代码，*.java文件 使用编译命令（javac）生成Java字节码文件*.class，字节码文件是平台无关的 JVM执行字节码文件，并将字节码转换为机器指令 机器指令在CPU上运行  不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发编程底层原理——慕课笔记">
+<meta property="og:url" content="http://yoursite.com/2020/04/11/Java并发编程底层原理——慕课笔记/index.html">
+<meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="1. Java内存模型1.1 从Java代码到CPU指令的过程 编写Java代码，*.java文件 使用编译命令（javac）生成Java字节码文件*.class，字节码文件是平台无关的 JVM执行字节码文件，并将字节码转换为机器指令 机器指令在CPU上运行  不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JM">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-12T03:48:47.802Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java并发编程底层原理——慕课笔记">
+<meta name="twitter:description" content="1. Java内存模型1.1 从Java代码到CPU指令的过程 编写Java代码，*.java文件 使用编译命令（javac）生成Java字节码文件*.class，字节码文件是平台无关的 JVM执行字节码文件，并将字节码转换为机器指令 机器指令在CPU上运行  不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JM">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/11/Java并发编程底层原理——慕课笔记/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java并发编程底层原理——慕课笔记 | SCORONEPION</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SCORONEPION</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰若雪峰与天骄，冷玉温润眉眼笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+    <a href="/schedule/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />日程表</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/11/Java并发编程底层原理——慕课笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java并发编程底层原理——慕课笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-11 21:51:01" itemprop="dateCreated datePublished" datetime="2020-04-11T21:51:01+08:00">2020-04-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-12 11:48:47" itemprop="dateModified" datetime="2020-04-12T11:48:47+08:00">2020-04-12</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-Java内存模型"><a href="#1-Java内存模型" class="headerlink" title="1. Java内存模型"></a>1. Java内存模型</h2><h3 id="1-1-从Java代码到CPU指令的过程"><a href="#1-1-从Java代码到CPU指令的过程" class="headerlink" title="1.1 从Java代码到CPU指令的过程"></a>1.1 从Java代码到CPU指令的过程</h3><ol>
+<li>编写Java代码，<code>*.java</code>文件</li>
+<li>使用编译命令（<code>javac</code>）生成Java字节码文件<code>*.class</code>，字节码文件是平台无关的</li>
+<li>JVM执行字节码文件，并将字节码转换为机器指令</li>
+<li>机器指令在CPU上运行</li>
+</ol>
+<p>不同的JVM会带来不同的“翻译”，不同CPU平台指令也千差万别，要保证并发安全的话，需要一个标准，让多线程运行结果可预期，这个标准就是JMM。</p>
+<h3 id="1-2-JVM内存结构、Java内存模型、Java对象模型"><a href="#1-2-JVM内存结构、Java内存模型、Java对象模型" class="headerlink" title="1.2 JVM内存结构、Java内存模型、Java对象模型"></a>1.2 JVM内存结构、Java内存模型、Java对象模型</h3><p>整体来说：</p>
+<ul>
+<li>JVM内存结构，和Java虚拟机的<strong>运行时区域</strong>有关（堆、栈等）</li>
+<li>Java内存模型，和<strong>并发</strong>编程有关</li>
+<li>Java对象模型，和Java对象在<strong>虚拟机中的表现形式</strong>有关</li>
+</ul>
+<h4 id="1-2-1-JVM内存结构"><a href="#1-2-1-JVM内存结构" class="headerlink" title="1.2.1 JVM内存结构"></a>1.2.1 JVM内存结构</h4><p>JVM内存结构包括方法区、堆、虚拟机栈、本地方法栈和程序计数器。其实中，方法区和堆是所有线程共享的，Java栈、本地方法栈和程序计数器是线程私有的。</p>
+<ul>
+<li>堆中存储通过new或者其他指令创建的实例对象。</li>
+<li>虚拟机栈保存了基本类型和对对象的引用。</li>
+<li>方法区存储已加载的静态变量、类信息、常量信息和永久引用。</li>
+<li>本地方法栈保存native方法</li>
+<li>程序计数器保存当前字节码所执行到的行号、下一条执行的指令等</li>
+</ul>
+<h4 id="1-2-2-Java对象模型"><a href="#1-2-2-Java对象模型" class="headerlink" title="1.2.2 Java对象模型"></a>1.2.2 Java对象模型</h4><p>Java对象自身的存储模型</p>
+<p>JVM会给这个类创建一个<code>instanceKlass</code>，保存在<strong>方法区</strong>，用来在JVM层表示这个Java类。在代码中使用new创建一个对象时，JVM会在<strong>堆</strong>中创建一个<code>instanceOopDesc</code>对象，这个对象中包含了<strong>对象头</strong>以及<strong>实例数据</strong>，如果有引用，JVM会在<strong>栈</strong>中创建该对象的引用。</p>
+<h4 id="1-2-3-Java内存模型JMM"><a href="#1-2-3-Java内存模型JMM" class="headerlink" title="1.2.3 Java内存模型JMM"></a>1.2.3 Java内存模型JMM</h4><p>JMM是一组规范，各个JVM的实现需要遵守JMM规范，以便开发者可以利用这些规范，方便地开发多线程程序，避免因为平台不一致导致运行结果不一致。JMM也是工具类和关键字的原理。</p>
+<p>JMM最重要的三个内容：<strong>重排序</strong>、<strong>可见性</strong>、<strong>原子性</strong></p>
+<h3 id="1-3-重排序"><a href="#1-3-重排序" class="headerlink" title="1.3 重排序"></a>1.3 重排序</h3><p>代码的实际执行顺序和在Java文件中的顺序不一致，代码指令并不是严格按照代码语句顺序执行的，它们的顺序被改变了，这就是重排序。</p>
+<p>优点：优化指令，提高处理速度</p>
+<p>重排序3种情况：</p>
+<ol>
+<li>编译器优化。编译器出于优化目的，会在编译过程中对语句进行一定重排，导致语句顺序与代码不一致。</li>
+<li>CPU指令重排序。CPU的优化行为，通过乱序执行的技术来提高效率</li>
+<li>内存“重排序”。内存不存在重排序，但是可能发生类似重排序的效果。假如某个线程修改数据后没有写回主内存，其他线程看不到修改，导致后续执行出现类似于重排序的效果。</li>
+</ol>
+<h3 id="1-4-可见性"><a href="#1-4-可见性" class="headerlink" title="1.4 可见性"></a>1.4 可见性</h3><p>CPU有多级缓存，导致读的数据可能会过期。线程间的对于共享变量可见性问题<strong>不是直接由多核引起</strong>，而是<strong>由多缓存引起</strong>。假如所有核心使用公用一个缓存，就不存在内存可见性问题了。</p>
+<p>每个核心会将自己需要的数据读到独占缓存中，数据修改后也是写入到缓存中，然后等待刷入到主存中，导致有些核心读取到的值是一个过期的值。</p>
+<h3 id="1-5-JMM的抽象：主内存和本地内存"><a href="#1-5-JMM的抽象：主内存和本地内存" class="headerlink" title="1.5 JMM的抽象：主内存和本地内存"></a>1.5 JMM的抽象：主内存和本地内存</h3><p>Java作为高级语言，屏蔽了这些底层细节，用JMM定义了一套读写内存数据的规范，抽象了主内存和本地内存的概念。JMM规定如下：</p>
+<ol>
+<li><strong>所有的变量</strong>都存储在<strong>主</strong>内存中，同时<strong>每个线程</strong>有自己<strong>独立的工作内存</strong>，工作内存中的变量内容是主内存中的拷贝。</li>
+<li>线程<strong>不能直接读写主内存中的变量</strong>，而是只能操作自己工作内存中的变量，然后再<strong>同步</strong>到主内存中。</li>
+<li><strong>主内存</strong>是多个线程<strong>共享</strong>的，但是线程间<strong>不共享工作内存</strong>，如果线程间需要通信，必须借助主内存中转实现。</li>
+</ol>
+<h3 id="1-6-Happens-Before原则"><a href="#1-6-Happens-Before原则" class="headerlink" title="1.6 Happens-Before原则"></a>1.6 Happens-Before原则</h3><p>什么不是happens-before原则？两个线程没有互相配合的机制，代码X和Y的执行结果并不能保证总被对方看到，这就不具备happens-before。</p>
+<p>两个操作可以用happens-before确定执行顺序：如果一个操作happens-before于另一个操作，那么我们说第一个操作对于第二个操作是可见的。</p>
+<p>Happens-Before规则有哪些？</p>
+<ol>
+<li>单线程规则。单线程中，后面的操作一定能看到前面的操作</li>
+<li><strong>锁操作（synchronized和lock）</strong>。加锁后，一定能看到解锁前的操作</li>
+<li><strong>volatile变量</strong>。修改一个volatile修饰的变量，读取的时候一定能看到更新</li>
+<li>线程启动。新线程启动时，一定能看到主线程的所有操作</li>
+<li>线程join。join后面的语句一定能看到之前等待线程的所有操作</li>
+<li>传递性：如果hb(A, B)且hb(B, C)，那么有hb(A, C)</li>
+<li>中断：一个线程被中断以后，一定能被其他线程检测到</li>
+<li>构造方法：finalize()方法执行时一定能看到构造方法的最后一行指令</li>
+<li>工具类的happens-before原则<ol>
+<li>线程安全的容器get一定能看到在此之前的put等存入操作</li>
+<li>CountDownLatch：<code>countDown()</code>执行完之后，才能从<code>await()</code>处苏醒</li>
+<li>Semaphore</li>
+<li>Future</li>
+<li>线程池</li>
+<li>CyclicBarrier</li>
+</ol>
+</li>
+</ol>
+<p>分析代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">// main</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">volatile</span> b = <span class="number">2</span>;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// writerThread</span></span><br><span class="line">a = <span class="number">3</span>;</span><br><span class="line">b = a;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// readerThread</span></span><br><span class="line">print(a, b);</span><br></pre></td></tr></table></figure>
+<p>给b加了<code>volatile</code>，不仅b被影响，还可以实现<strong>轻量级同步</strong>。</p>
+<p>b之前的写入(b=a)对读取b后的代码(print b)都可见，所以在writerThread里对a的赋值，一定会对readerThread里的读取可见。所以即使这里的a不加<code>volatile</code>，只要b读到的是3，就可以由happens-before原则保证读取的a是3而不是1.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/08/synchronized深度解析-慕课笔记/" rel="next" title="synchronized深度解析-慕课笔记">
+                <i class="fa fa-chevron-left"></i> synchronized深度解析-慕课笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Tiro</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Java内存模型"><span class="nav-number">1.</span> <span class="nav-text">1. Java内存模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-从Java代码到CPU指令的过程"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 从Java代码到CPU指令的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-JVM内存结构、Java内存模型、Java对象模型"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 JVM内存结构、Java内存模型、Java对象模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-JVM内存结构"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1 JVM内存结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-Java对象模型"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2 Java对象模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-3-Java内存模型JMM"><span class="nav-number">1.2.3.</span> <span class="nav-text">1.2.3 Java内存模型JMM</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-重排序"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 重排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-可见性"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-JMM的抽象：主内存和本地内存"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 JMM的抽象：主内存和本地内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-Happens-Before原则"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 Happens-Before原则</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tiro</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
