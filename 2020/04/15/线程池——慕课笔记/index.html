@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. 线程池作用为每个任务都新建一个线程，开销太大，过多的线程会占用大量的内存。使用线程池可以避免反复创建并销毁线程所带来的开销问题。 使用线程池好处：加快响应速度；合理利用CPU和内存；统一管理 2. 创建线程池   参数名 类型 含义     corePoolSize int 核心线程数   maxPoolSize int 最大线程数   keepAliveTime long 保持存活时间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程池——慕课笔记">
+<meta property="og:url" content="http://yoursite.com/2020/04/15/线程池——慕课笔记/index.html">
+<meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="1. 线程池作用为每个任务都新建一个线程，开销太大，过多的线程会占用大量的内存。使用线程池可以避免反复创建并销毁线程所带来的开销问题。 使用线程池好处：加快响应速度；合理利用CPU和内存；统一管理 2. 创建线程池   参数名 类型 含义     corePoolSize int 核心线程数   maxPoolSize int 最大线程数   keepAliveTime long 保持存活时间">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-16T04:05:03.602Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="线程池——慕课笔记">
+<meta name="twitter:description" content="1. 线程池作用为每个任务都新建一个线程，开销太大，过多的线程会占用大量的内存。使用线程池可以避免反复创建并销毁线程所带来的开销问题。 使用线程池好处：加快响应速度；合理利用CPU和内存；统一管理 2. 创建线程池   参数名 类型 含义     corePoolSize int 核心线程数   maxPoolSize int 最大线程数   keepAliveTime long 保持存活时间">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/15/线程池——慕课笔记/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>线程池——慕课笔记 | SCORONEPION</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SCORONEPION</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰若雪峰与天骄，冷玉温润眉眼笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+    <a href="/schedule/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />日程表</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/线程池——慕课笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">线程池——慕课笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-15 10:30:20" itemprop="dateCreated datePublished" datetime="2020-04-15T10:30:20+08:00">2020-04-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-16 12:05:03" itemprop="dateModified" datetime="2020-04-16T12:05:03+08:00">2020-04-16</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-线程池作用"><a href="#1-线程池作用" class="headerlink" title="1. 线程池作用"></a>1. 线程池作用</h2><p>为每个任务都新建一个线程，开销太大，过多的线程会占用大量的内存。使用线程池可以避免反复创建并销毁线程所带来的开销问题。</p>
+<p>使用线程池好处：加快响应速度；合理利用CPU和内存；统一管理</p>
+<h2 id="2-创建线程池"><a href="#2-创建线程池" class="headerlink" title="2. 创建线程池"></a>2. 创建线程池</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>corePoolSize</code></td>
+<td style="text-align:center">int</td>
+<td style="text-align:center">核心线程数</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>maxPoolSize</code></td>
+<td style="text-align:center">int</td>
+<td style="text-align:center">最大线程数</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>keepAliveTime</code></td>
+<td style="text-align:center">long</td>
+<td style="text-align:center">保持存活时间</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>workQueue</code></td>
+<td style="text-align:center">BlockingQueue</td>
+<td style="text-align:center">任务存储队列</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>threadFactory</code></td>
+<td style="text-align:center">ThreadFactory</td>
+<td style="text-align:center">当线程池需要新的线程时，<br>会使用threadFactory来生成新线程</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>Handler</code></td>
+<td style="text-align:center">RejectedExecutionHandler</td>
+<td style="text-align:center">线程池无法接受提交任务时的拒绝策略</td>
+</tr>
+</tbody>
+</table>
+<p><code>corePoolSize</code>指的是核心线程数：线程池完成初始化以后，默认情况下，线程池并没有任何线程，等到有任务来时，才去创建新线程执行任务。线程池有可能会在核心线程数的基础上，额外增加一些线程，但是这些新增加的线程数有个上限，这就是最大值<code>maxPoolSize</code></p>
+<p>添加线程池的规则：</p>
+<ol>
+<li>如果线程数小于<code>corePoolSize</code>，即使其他工作线程处于空闲状态，也会创建一个新线程来运行新任务</li>
+<li>如果线程数大于等于<code>corePoolSize</code>但小于<code>maxPoolSize</code>，则将任务放入队列</li>
+<li>如果队列已满，并且线程数小于<code>maxPoolSize</code>，则创建一个新线程来运行任务</li>
+<li>如果队列已满，并且线程数等于<code>maxPoolSize</code>，则拒绝该任务</li>
+</ol>
+<p>增减线程的特点：</p>
+<ol>
+<li>通过设置<code>corePoolSize</code>和<code>maxPoolSize</code>相同，就可以创建固定大小的线程池</li>
+<li>线程池<strong>希望保持较少的线程数</strong>，并且只有在负载变得很大的时候才去增加它</li>
+<li>通过设置<code>maxPoolSize</code>为很高的值，例如<code>Integer.MAX_VALUE</code>，可以允许线程池容纳任意数量的并发任务</li>
+<li>只有在队列填满时才创建多于<code>corePoolSize</code>的线程，所以使用无界队列（例如<code>LinkedBlockingQueue</code>）的话，线程数就不会超过<code>corePoolSize</code></li>
+</ol>
+<p>如果线程池当前的线程数多于<code>corePoolSize</code>，那么多余的线程空闲时间超过<code>keepAliveTime</code>，它们就会被中止。</p>
+<p>新的线程是由ThreadFactory创建的，默认使用<code>Executors.defaultThreadFactory()</code>，创建出来的线程都在同一个线程组，拥有同样的NORM_PRIORITY优先级并且都不是守护线程。如果自己指定ThreadFactory，那么就可以改变线程名、线程组、优先级、是否守护进程等。</p>
+<p><code>newFixedThreadPool</code></p>
+<ul>
+<li>存储队列采用的是<code>LinkedBlokcingQueue</code>，没有容量上限，所以当请求越来越多且无法及时处理完毕的时候，容易占用大量的内存，造成OOM。</li>
+</ul>
+<p><code>newSingleThreadExecutor</code></p>
+<ul>
+<li>与<code>newFixedThreadPool</code>大体相同，只不过线程数直接设置为1.</li>
+</ul>
+<p><code>newCachedThreadPool</code></p>
+<ul>
+<li>无界线程池，可自动回收多余线程，采用<code>synchronous queue</code>。弊端在于参数<code>maxPoolSize</code>设置为了<code>Integer.MAX_VALUE</code>，这可能会创建数量非常多的线程，导致OOM</li>
+</ul>
+<p><code>newScheduledThreadPool</code></p>
+<ul>
+<li>支持定时或周期性任务执行的线程池</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:center">FixedThreadPool</th>
+<th style="text-align:center">CachedThreadPool</th>
+<th style="text-align:center">ScheduledThreadPool</th>
+<th style="text-align:center">SingleThreaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>corePoolSize</code></td>
+<td style="text-align:center">构造时传入参数</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">构造时传入参数</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>maxPoolSize</code></td>
+<td style="text-align:center">与<code>corePoolSize</code>相同</td>
+<td style="text-align:center">Integer.MAX_VALUE</td>
+<td style="text-align:center">Integer.MAX_VALUE</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>keepAliveTime</code></td>
+<td style="text-align:center">0s</td>
+<td style="text-align:center">60s</td>
+<td style="text-align:center">0s</td>
+<td style="text-align:center">0s</td>
+</tr>
+<tr>
+<td style="text-align:center">阻塞队列</td>
+<td style="text-align:center">LinkedBlockingQueue</td>
+<td style="text-align:center">SynchronousQueue</td>
+<td style="text-align:center">DelayedWorkQueue</td>
+<td style="text-align:center">LinkedBlockingQueue</td>
+</tr>
+</tbody>
+</table>
+<p>ps：用LinkedBlockingQueue的原因是线程池线程数量无法增加，只能通过设置无界队列来存储任务；用SynchronousQueue的原因是CachedThreadPool不需要存储任务，新任务一来就可以直接新建线程来运行；</p>
+<p>正确设置线程池的方法：</p>
+<ul>
+<li>根据不同的业务场景，自己设置线程池参数</li>
+</ul>
+<p>线程数量如何设置：</p>
+<ul>
+<li>CPU密集型（加密、计算hash等）：最佳线程数为CPU核心数的<strong>1-2</strong>倍左右。</li>
+<li>耗时IO型（读写数据库、文件、网络读写等）：最佳线程数一般会大于CPU核心数很多倍，以JVM线程监控繁忙为依据，保证线程空闲可以衔接上。</li>
+<li>Brain Gotez推荐的计算方法：<strong>线程数 = CPU核心数 * (1 + 平均等待时间 / 平均工作时间)</strong></li>
+</ul>
+<h2 id="3-停止线程池"><a href="#3-停止线程池" class="headerlink" title="3. 停止线程池"></a>3. 停止线程池</h2><p>使用<code>showdown()</code>后，线程池会拒绝新提交的任务，等到当前和队列中的所有任务执行完毕后才会完全停止。<code>isShowdown()</code>会返回线程池是否处于shutdown状态，<code>isTerminated()</code>会返回线程池是否处于停止状态。</p>
+<p><code>awaitTermination()</code>会检测一段时间内线程池能否进入Terminated状态，能则返回true，不能就返回false。<code>shutdownNow()</code>会立刻关闭线程池，向所有活动线程发送interrupted中断信号，返回队列中等待的任务</p>
+<h2 id="4-任务太多，如何拒绝？"><a href="#4-任务太多，如何拒绝？" class="headerlink" title="4. 任务太多，如何拒绝？"></a>4. 任务太多，如何拒绝？</h2><p>拒绝时机：</p>
+<ul>
+<li>当线程池执行shutdown进入关闭状态后，提交新任务会被拒绝</li>
+<li>当线程池最大线程数和队列容量都有限时，饱和后拒绝新任务</li>
+</ul>
+<p>拒绝策略：</p>
+<ul>
+<li>AbortPolicy：直接抛出异常</li>
+<li>DiscardPolicy：无任何通知，直接丢弃</li>
+<li>DiscardOldestPolicy：丢弃最老的任务</li>
+<li>CallerRunsPolicy：直接让提交者去执行。好处：1. 避免任务得不到运行被抛弃；2. 等价于负反馈机制，降低任务提交速度</li>
+</ul>
+<h2 id="5-Executor家族"><a href="#5-Executor家族" class="headerlink" title="5. Executor家族"></a>5. Executor家族</h2><p>Executor &lt;– ExecutorService &lt;– AbstractExecutorService &lt;– ThreadPoolExecutor</p>
+<ul>
+<li>Executor：顶层接口，只有一个方法<code>execute()</code></li>
+<li>ExecutorService：继承Executor，添加了新方法（shutdown等）</li>
+<li>Executors：工具类，创建特定的线程池（newFixedThreadPool等）</li>
+</ul>
+<h2 id="6-线程复用原理"><a href="#6-线程复用原理" class="headerlink" title="6. 线程复用原理"></a>6. 线程复用原理</h2><p>线程池里的线程不是普通的线程，他们的run方法会在队列里检测是否有新任务，有的话就执行任务的run方法。</p>
+<h2 id="7-线程池5大状态"><a href="#7-线程池5大状态" class="headerlink" title="7. 线程池5大状态"></a>7. 线程池5大状态</h2><ul>
+<li>RUNNING：接收新任务并处理排队任务</li>
+<li>SHUTDOWN：不接受新任务，但处理排队任务</li>
+<li>STOP：不接受新任务，也不处理排队任务，并中断正在进行的任务</li>
+<li>TIYING：“整洁”，所有任务已终止，workerCount为零，线程转换到此状态，并将运行terminated()钩子方法</li>
+<li>TERMINATED：terminated()运行完成</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/13/死锁——慕课笔记/" rel="next" title="死锁——慕课笔记">
+                <i class="fa fa-chevron-left"></i> 死锁——慕课笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Tiro</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-线程池作用"><span class="nav-number">1.</span> <span class="nav-text">1. 线程池作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-创建线程池"><span class="nav-number">2.</span> <span class="nav-text">2. 创建线程池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-停止线程池"><span class="nav-number">3.</span> <span class="nav-text">3. 停止线程池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-任务太多，如何拒绝？"><span class="nav-number">4.</span> <span class="nav-text">4. 任务太多，如何拒绝？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Executor家族"><span class="nav-number">5.</span> <span class="nav-text">5. Executor家族</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-线程复用原理"><span class="nav-number">6.</span> <span class="nav-text">6. 线程复用原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-线程池5大状态"><span class="nav-number">7.</span> <span class="nav-text">7. 线程池5大状态</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tiro</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
