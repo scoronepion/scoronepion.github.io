@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.2.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.2.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. Lock接口1.1 为什么synchronized不够用 效率低：锁的释放情况少、试图获得锁时不能超时、不能中断一个正在试图获取锁的线程 不够灵活（读写锁更灵活）：加锁和释放的时机单一，每个锁仅有单一的条件（某个对象），不能满足需求 无法知道是否成功获取到了锁  1.2 Lock主要方法lock()：普通的获取锁，如果锁已被其他线程获取，则等待。Lock不会像synchronized那样在异">
+<meta property="og:type" content="article">
+<meta property="og:title" content="锁——慕课笔记">
+<meta property="og:url" content="http://yoursite.com/2020/04/16/锁——慕课笔记/index.html">
+<meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="1. Lock接口1.1 为什么synchronized不够用 效率低：锁的释放情况少、试图获得锁时不能超时、不能中断一个正在试图获取锁的线程 不够灵活（读写锁更灵活）：加锁和释放的时机单一，每个锁仅有单一的条件（某个对象），不能满足需求 无法知道是否成功获取到了锁  1.2 Lock主要方法lock()：普通的获取锁，如果锁已被其他线程获取，则等待。Lock不会像synchronized那样在异">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-17T14:03:50.435Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="锁——慕课笔记">
+<meta name="twitter:description" content="1. Lock接口1.1 为什么synchronized不够用 效率低：锁的释放情况少、试图获得锁时不能超时、不能中断一个正在试图获取锁的线程 不够灵活（读写锁更灵活）：加锁和释放的时机单一，每个锁仅有单一的条件（某个对象），不能满足需求 无法知道是否成功获取到了锁  1.2 Lock主要方法lock()：普通的获取锁，如果锁已被其他线程获取，则等待。Lock不会像synchronized那样在异">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/16/锁——慕课笔记/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>锁——慕课笔记 | SCORONEPION</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SCORONEPION</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰若雪峰与天骄，冷玉温润眉眼笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+    <a href="/schedule/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />日程表</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/16/锁——慕课笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">锁——慕课笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-16 19:30:34" itemprop="dateCreated datePublished" datetime="2020-04-16T19:30:34+08:00">2020-04-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-17 22:03:50" itemprop="dateModified" datetime="2020-04-17T22:03:50+08:00">2020-04-17</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-Lock接口"><a href="#1-Lock接口" class="headerlink" title="1. Lock接口"></a>1. Lock接口</h2><h3 id="1-1-为什么synchronized不够用"><a href="#1-1-为什么synchronized不够用" class="headerlink" title="1.1 为什么synchronized不够用"></a>1.1 为什么synchronized不够用</h3><ol>
+<li>效率低：锁的释放情况少、试图获得锁时不能超时、不能中断一个正在试图获取锁的线程</li>
+<li>不够灵活（读写锁更灵活）：加锁和释放的时机单一，每个锁仅有单一的条件（某个对象），不能满足需求</li>
+<li>无法知道是否成功获取到了锁</li>
+</ol>
+<h3 id="1-2-Lock主要方法"><a href="#1-2-Lock主要方法" class="headerlink" title="1.2 Lock主要方法"></a>1.2 Lock主要方法</h3><p><code>lock()</code>：普通的获取锁，如果锁已被其他线程获取，则等待。Lock不会像synchronized那样在异常时释放锁。最佳实践是使用try finally，在finally中释放锁，保证发生异常时锁一定被释放。lock()方法不能被中断，一旦发生死锁，lock()就会永久等待。</p>
+<p><code>trylock()</code>：尝试获取锁，如果当前锁没有被其他线程占用，则获取成功，返回true，否则返回false，代表锁获取失败</p>
+<p><code>tryLock(long time, TimeUnit unit)</code>：超时就放弃</p>
+<p><code>lockInterruptibly()</code>：相当于在<code>tryLock(long time, TimeUnit unit)</code>中把超时时间设为无限，在等待锁的过程中，线程可以被中断。</p>
+<p><code>unlock()</code>：解锁，应该写在finally里</p>
+<h3 id="1-3-Lock的可见性保证"><a href="#1-3-Lock的可见性保证" class="headerlink" title="1.3 Lock的可见性保证"></a>1.3 Lock的可见性保证</h3><p>Lock的加解锁和synchronized有同样的内存语义，下一个线程加锁后可以看到前一个线程解锁前的所有操作。</p>
+<h2 id="2-锁的分类"><a href="#2-锁的分类" class="headerlink" title="2. 锁的分类"></a>2. 锁的分类</h2><p>线程要不要锁住同步资源？</p>
+<ul>
+<li>锁住：悲观锁</li>
+<li>不锁住：乐观锁</li>
+</ul>
+<p>多线程能否共享一把锁？</p>
+<ul>
+<li>可以：共享锁</li>
+<li>不可以：独占锁</li>
+</ul>
+<p>多线程竞争时，是否排队？</p>
+<ul>
+<li>排队：公平锁</li>
+<li>先尝试插队，插队失败再排队：非公平锁</li>
+</ul>
+<p>同一个线程是否可以重复获取一把锁？</p>
+<ul>
+<li>可以：可重入锁</li>
+<li>不可以：不可重入锁</li>
+</ul>
+<p>是否可中断？</p>
+<ul>
+<li>可以：可中断锁</li>
+<li>不可以：非可中断锁</li>
+</ul>
+<p>等锁的过程？</p>
+<ul>
+<li>自旋：自旋锁</li>
+<li>阻塞：非自旋锁</li>
+</ul>
+<h3 id="2-1-乐观锁与悲观锁"><a href="#2-1-乐观锁与悲观锁" class="headerlink" title="2.1 乐观锁与悲观锁"></a>2.1 乐观锁与悲观锁</h3><p>互斥同步锁（悲观锁）的劣势：</p>
+<ul>
+<li>阻塞和唤醒带来的性能劣势</li>
+<li>永久阻塞：如果持有锁的线程陷入永久阻塞，那么等该该线程释放锁的其他线程永远也得不到执行</li>
+<li>优先级反转：持有锁的线程优先级比较低，阻塞的线程优先级比较高</li>
+</ul>
+<p>悲观锁：如果我不锁柱这个资源，别人就会来抢，所以我每次获取并修改数据时，都要锁住资源，防止别人修改。Java中悲观锁的实现就是<code>synchronized</code>和Lock相关类。</p>
+<p>乐观锁：认为自己在处理数据的时候不会有其他线程来干扰，所以不会锁住被操作对象。在更新的时候，对比在我修改期间数据是否被修改过，如果没有被改过，那就正常修改数据。如果被改过，就按照策略（放弃、报错、重试）处理。乐观锁一般利用CAS实现。原子类底层实现属于乐观锁，还有git也是乐观锁</p>
+<p>开销对比</p>
+<ul>
+<li>悲观锁原始开销大于乐观锁，但特点是一劳永逸，不管临界区锁定多长时间，线程都被阻塞，不占用CPU资源，开销不会越来越大</li>
+<li>乐观锁一开始开销比悲观锁小，但是如果自旋时间很长或者不停重试，那么消耗的资源也会越来越多</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li>悲观锁：适合并发写入多的情况，适用于临界区锁定时间比较长的情况，悲观锁可以避免大量无用自旋等消耗。典型情况：临界区有IO操作；临界区代码复杂或者循环量大；临界区竞争激烈</li>
+<li>乐观锁：适合并发写入少，大部分是读取的场景，不加锁能让读取性能大幅度提高</li>
+</ul>
+<h3 id="2-2-可重入锁与非可重入锁"><a href="#2-2-可重入锁与非可重入锁" class="headerlink" title="2.2 可重入锁与非可重入锁"></a>2.2 可重入锁与非可重入锁</h3><p>可重入锁获取锁前先判断，如果当前线程就是已经占有锁的线程，则status的值+1，并返回true。释放锁也是判断status是否为0，为0才真正释放锁，否则只是同一线程重复持有锁。</p>
+<p>非可重入锁是直接尝试获取锁，释放锁的时候也是直接将status置为0。</p>
+<p>参考AQS</p>
+<h3 id="2-3-公平锁与非公平锁"><a href="#2-3-公平锁与非公平锁" class="headerlink" title="2.3 公平锁与非公平锁"></a>2.3 公平锁与非公平锁</h3><p>为什么要有非公平锁？避免线程唤醒带来的空档期，假设有AB两个线程，A线程持有锁，B被阻塞，当A释放锁以后，B被唤醒，但是唤醒需要时间。在这个空档期内，C进来获取锁，拿到锁并执行完然后释放锁，对B其实无影响。</p>
+<p>trylock不遵守公平的规定，只要有线程释放了锁，trylock就会立即获得，即使在他之前已经有其他线程在等待队列里</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">优势</th>
+<th style="text-align:center">劣势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">公平锁</td>
+<td style="text-align:center">各线程公平平等，每个线程等待一段时间后一定有执行的机会</td>
+<td style="text-align:center">更慢，吞吐量小</td>
+</tr>
+<tr>
+<td style="text-align:center">非公平锁</td>
+<td style="text-align:center">更快，吞吐量更大</td>
+<td style="text-align:center">有可能产生线程饥饿，某些线程长时间得不到执行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-共享锁和排他锁"><a href="#2-4-共享锁和排他锁" class="headerlink" title="2.4 共享锁和排他锁"></a>2.4 共享锁和排他锁</h3><p>排他锁又称独占锁、独享锁。</p>
+<p>共享锁，又称读锁，获得共享锁以后，可以查看但无法修改和删除数据，其他线程也可以获取到共享锁，也可以查看但无法修改和删除数据。</p>
+<p>典型是<code>ReentrantReadWriteLock</code>，其中读锁是共享锁，写锁是排他锁</p>
+<p>读写锁规则：</p>
+<ul>
+<li>多个线程只申请读锁，都可以申请到</li>
+<li>如果有一个线程已经占用了读锁，此时其他线程如果要申请写锁，则申请写锁的线程会一直等待释放读锁</li>
+<li>如果有一个线程已经占用了写锁，则此时如果其他线程申请读锁或者写锁，都会等待占用写锁的线程释放写锁</li>
+<li>总结：要么很多个读，要么一个写，两者不会同时出现。</li>
+</ul>
+<p><code>ReentrantReadWriteLock</code>读锁和写锁的交互方式：</p>
+<ul>
+<li>不允许读锁插队</li>
+<li>允许降级。不允许升级（允许获取写锁后直接获取读锁，不允许获取读锁后直接获取写锁）</li>
+</ul>
+<p><strong>读锁插队策略：</strong></p>
+<p>场景：假设线程2和线程4正在同时读取，线程3想要写入，拿不到锁，于是进入等待队列，线程5不在队列里，现在过来想要读取</p>
+<ul>
+<li><del>策略1：5直接插队，和2 4一起读取。虽然效率高，但是容易造成饥饿</del></li>
+<li>策略2：5插入队列中，一起等待</li>
+</ul>
+<p>总的来说，公平锁不允许插队，非公平锁里，写锁可以随时插队，读锁仅在<strong>等待队列头节点不是想获取写锁的线程</strong>的时候可以插队。</p>
+<p>在写入数据后如果要读取数据，为什么要从写锁降级为读锁？主要是为了保证可见性。如果当前线程不获取读锁而直接释放写锁，另一个线程A获取了写锁并修改了数据，那么这个线程是无法感知到A的数据更新的，如果线程获取读锁，则A会被阻塞，直到当前线程释放读锁后才进行更新</p>
+<h3 id="2-5-自旋锁与阻塞锁"><a href="#2-5-自旋锁与阻塞锁" class="headerlink" title="2.5 自旋锁与阻塞锁"></a>2.5 自旋锁与阻塞锁</h3><p>某些场景里，同步资源锁定时间很短，为了这一段时间去切换线程、线程挂起和恢复现场的花销可能会让系统得不偿失。所以当线程拿不到锁时，让他“等待一下”，进行自旋，这样就可以避免切换线程的开销。自旋锁的实现是CAS。</p>
+<p>自旋锁一般适用于多核服务器，在并发度不高的情况下，比阻塞锁效率高。还有就是适用于临界区短小的情况，如果临界区很大（线程拿到锁以后很久才释放），这也不合适</p>
+<h3 id="2-6-可中断锁与不可中断锁"><a href="#2-6-可中断锁与不可中断锁" class="headerlink" title="2.6 可中断锁与不可中断锁"></a>2.6 可中断锁与不可中断锁</h3><p>synchronized是不可中断锁，Lock、tryLock和lockInterruptibly都是可中断锁</p>
+<h2 id="3-锁优化"><a href="#3-锁优化" class="headerlink" title="3. 锁优化"></a>3. 锁优化</h2><h3 id="3-1-JVM对锁的优化"><a href="#3-1-JVM对锁的优化" class="headerlink" title="3.1 JVM对锁的优化"></a>3.1 JVM对锁的优化</h3><ul>
+<li>自适应锁：自旋一段时间后还没有拿到锁，就转为阻塞锁</li>
+<li>锁消除：JVM检测到不必要的加锁行为时，会消除这些行为</li>
+<li>锁粗化：一系列操作都是对某个对象反复加锁解锁，开销较大。JVM会统一在开头处加锁，结尾处解锁，避免反复加解锁</li>
+</ul>
+<h3 id="3-2-写代码时的注意点"><a href="#3-2-写代码时的注意点" class="headerlink" title="3.2 写代码时的注意点"></a>3.2 写代码时的注意点</h3><ul>
+<li>缩小同步代码块</li>
+<li>尽量不要锁住方法</li>
+<li>减少请求锁的次数</li>
+<li>避免人为制造“热点”</li>
+<li>锁中尽量不要再包含锁</li>
+<li>选择合适的锁类型或合适的工具类</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/16/ThreadLocal——慕课笔记/" rel="next" title="ThreadLocal——慕课笔记">
+                <i class="fa fa-chevron-left"></i> ThreadLocal——慕课笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Tiro</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Lock接口"><span class="nav-number">1.</span> <span class="nav-text">1. Lock接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-为什么synchronized不够用"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 为什么synchronized不够用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-Lock主要方法"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 Lock主要方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-Lock的可见性保证"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 Lock的可见性保证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-锁的分类"><span class="nav-number">2.</span> <span class="nav-text">2. 锁的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-乐观锁与悲观锁"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 乐观锁与悲观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-可重入锁与非可重入锁"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 可重入锁与非可重入锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-公平锁与非公平锁"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 公平锁与非公平锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-共享锁和排他锁"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 共享锁和排他锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-自旋锁与阻塞锁"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 自旋锁与阻塞锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-可中断锁与不可中断锁"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 可中断锁与不可中断锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-锁优化"><span class="nav-number">3.</span> <span class="nav-text">3. 锁优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-JVM对锁的优化"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 JVM对锁的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-写代码时的注意点"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 写代码时的注意点</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tiro</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.2.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.2.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.2.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
