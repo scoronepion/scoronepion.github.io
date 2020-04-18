@@ -102,20 +102,24 @@
 
 
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="SCORONEPION">
-<meta property="og:url" content="http://yoursite.com/archives/2020/page/2/index.html">
+  <meta name="description" content="1. 什么是CAS一种用来实现线程安全的算法，实现那些不能被打断的数据交互工作。思路：我认为V的值应该是A，是的话我把它改成B，如果不是A（说明被其他人改过），那我就不修改了，避免多人同时修改造成错误。CAS有三个操作数：内存值V、预期值A、要修改的值B。当预期值A与内存值V相同时，才将内存值修改为B，否则什么都不做。最后返回现在的V。CAS由CPU保证原子性（有特殊指令） 2. 应用场景 乐观锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CAS——慕课笔记">
+<meta property="og:url" content="http://yoursite.com/2020/04/18/CAS——慕课笔记/index.html">
 <meta property="og:site_name" content="SCORONEPION">
+<meta property="og:description" content="1. 什么是CAS一种用来实现线程安全的算法，实现那些不能被打断的数据交互工作。思路：我认为V的值应该是A，是的话我把它改成B，如果不是A（说明被其他人改过），那我就不修改了，避免多人同时修改造成错误。CAS有三个操作数：内存值V、预期值A、要修改的值B。当预期值A与内存值V相同时，才将内存值修改为B，否则什么都不做。最后返回现在的V。CAS由CPU保证原子性（有特殊指令） 2. 应用场景 乐观锁">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-18T07:30:19.298Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SCORONEPION">
+<meta name="twitter:title" content="CAS——慕课笔记">
+<meta name="twitter:description" content="1. 什么是CAS一种用来实现线程安全的算法，实现那些不能被打断的数据交互工作。思路：我认为V的值应该是A，是的话我把它改成B，如果不是A（说明被其他人改过），那我就不修改了，避免多人同时修改造成错误。CAS有三个操作数：内存值V、预期值A、要修改的值B。当预期值A与内存值V相同时，才将内存值修改为B，否则什么都不做。最后返回现在的V。CAS由CPU保证原子性（有特殊指令） 2. 应用场景 乐观锁">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/archives/2020/page/2/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/04/18/CAS——慕课笔记/"/>
 
 
 
@@ -125,7 +129,7 @@
   };
 </script>
 
-  <title>归档 | SCORONEPION</title>
+  <title>CAS——慕课笔记 | SCORONEPION</title>
   
 
 
@@ -172,7 +176,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -244,7 +248,7 @@
         
         
           
-          <li class="menu-item menu-item-archives menu-item-active">
+          <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
   </li>
@@ -264,31 +268,6 @@
 
   
     
-
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 
   
 
@@ -314,121 +293,176 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
 
-      
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        嗯..! 目前共计 14 篇日志。 继续努力。
-      </span>
-      
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2020">2020</h1>
-          </div>
-        
-        
-
-        
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/18/CAS——慕课笔记/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tiro">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SCORONEPION">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2020/03/22/RPC实战与核心原理-笔记（一）/" itemprop="url">
-              
-                <span itemprop="name">RPC实战与核心原理-笔记（一）</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">CAS——慕课笔记
+              
+            
+          </h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-03-22T19:55:47+08:00"
-              content="2020-03-22" >
-          03-22
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
 
-    </header>
-  </article>
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
 
+              
+                
+              
+
+              <time title="创建时间：2020-04-18 14:10:40 / 修改时间：15:30:19" itemprop="dateCreated datePublished" datetime="2020-04-18T14:10:40+08:00">2020-04-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2020/03/22/2020的新开始/" itemprop="url">
-              
-                <span itemprop="name">2020的新开始</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-03-22T00:28:47+08:00"
-              content="2020-03-22" >
-          03-22
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
+      
+        <h2 id="1-什么是CAS"><a href="#1-什么是CAS" class="headerlink" title="1. 什么是CAS"></a>1. 什么是CAS</h2><p>一种用来实现线程安全的算法，实现那些不能被打断的数据交互工作。思路：我认为V的值应该是A，是的话我把它改成B，如果不是A（说明被其他人改过），那我就不修改了，避免多人同时修改造成错误。CAS有三个操作数：内存值V、预期值A、要修改的值B。当预期值A与内存值V相同时，才将内存值修改为B，否则什么都不做。最后返回现在的V。CAS由CPU保证原子性（有特殊指令）</p>
+<h2 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h2><ul>
+<li>乐观锁</li>
+<li>并发容器</li>
+<li>原子类</li>
+</ul>
+<h2 id="3-AtomicInteger如何利用CAS实现并发累加"><a href="#3-AtomicInteger如何利用CAS实现并发累加" class="headerlink" title="3. AtomicInteger如何利用CAS实现并发累加"></a>3. AtomicInteger如何利用CAS实现并发累加</h2><p>使用Unsafe类，得到变量的内存地址，然后利用Unsafe类中的<code>compareAndSwapInt</code>方法，实现原子性的比较和替换。CAS操作自旋直到完成为止。</p>
+<p>ps：假如某一次CAS失败以后，第二次会重新获取内存内的值，然后尝试加1或者其他操作，再进行CAS操作。</p>
+<h2 id="4-CAS缺点——ABA问题"><a href="#4-CAS缺点——ABA问题" class="headerlink" title="4. CAS缺点——ABA问题"></a>4. CAS缺点——ABA问题</h2><p>假如一个线程拿到某个值是A，然后在他运算过程中，其他线程把这个值改成了B又改回了A，原始线程CAS更新的时候，会认为这个值没有变化，而进行更新，实际上是不对的。解决方法：使用版本号。</p>
+<h2 id="5-CAS缺点——自旋时间过长"><a href="#5-CAS缺点——自旋时间过长" class="headerlink" title="5. CAS缺点——自旋时间过长"></a>5. CAS缺点——自旋时间过长</h2><p>竞争很激烈的时候，自旋时间可能会过长</p>
+
+      
     </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/18/原子类——慕课笔记/" rel="next" title="原子类——慕课笔记">
+                <i class="fa fa-chevron-left"></i> 原子类——慕课笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2020/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2020/">1</a><span class="page-number current">2</span>
-  </nav>
+  </article>
 
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -449,8 +483,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -512,6 +555,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-什么是CAS"><span class="nav-number">1.</span> <span class="nav-text">1. 什么是CAS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-应用场景"><span class="nav-number">2.</span> <span class="nav-text">2. 应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-AtomicInteger如何利用CAS实现并发累加"><span class="nav-number">3.</span> <span class="nav-text">3. AtomicInteger如何利用CAS实现并发累加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-CAS缺点——ABA问题"><span class="nav-number">4.</span> <span class="nav-text">4. CAS缺点——ABA问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-CAS缺点——自旋时间过长"><span class="nav-number">5.</span> <span class="nav-text">5. CAS缺点——自旋时间过长</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -639,6 +698,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.2.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.2.0"></script>
+
+
 
   
 
